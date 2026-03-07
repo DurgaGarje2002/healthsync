@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Reminders — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#F0F4FF;--surface:#fff;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--accent:#2563EB;--r:14px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+.topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.brand{font-family:"Sora",sans-serif;font-size:1rem;font-weight:800;}.brand span{color:var(--accent);}
+.nav-back{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.85rem;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.nav-back:hover{background:var(--bg);}
+.wrap{max-width:720px;margin:0 auto;padding:36px 20px 60px;}
+h1{font-family:"Sora",sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+.sub{font-size:.87rem;color:var(--muted);margin-bottom:28px;}
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.05);padding:24px;margin-bottom:16px;}
+.sec{font-size:.7rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.sec i{color:var(--accent);}
+.reminder-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F1F5F9;}
+.reminder-row:last-child{border-bottom:none;padding-bottom:0;}
+.r-left{display:flex;align-items:center;gap:14px;}
+.r-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.r-icon.blue{background:#EFF6FF;color:#2563EB;}
+.r-icon.green{background:#F0FDF4;color:#16A34A;}
+.r-icon.orange{background:#FFF7ED;color:#EA580C;}
+.r-icon.purple{background:#FAF5FF;color:#9333EA;}
+.r-info .r-title{font-size:.87rem;font-weight:600;}
+.r-info .r-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.toggle{position:relative;display:inline-block;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#CBD5E1;transition:.3s;border-radius:24px;}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;transition:.3s;border-radius:50%;}
+input:checked+.slider{background:var(--accent);}
+input:checked+.slider:before{transform:translateX(20px);}
+.time-row{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #F1F5F9;}
+.time-label{font-size:.85rem;font-weight:600;flex:1;}
+.time-input{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;font-family:"DM Sans",sans-serif;color:var(--text);outline:none;}
+.time-input:focus{border-color:var(--accent);}
+.med-list{margin-bottom:12px;}
+.med-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8FAFC;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;}
+.med-item .med-name{flex:1;font-size:.85rem;font-weight:600;}
+.med-item .med-time{font-size:.75rem;color:var(--muted);}
+.med-del{background:none;border:none;color:#CBD5E1;cursor:pointer;font-size:.85rem;}
+.med-del:hover{color:#EF4444;}
+.add-row{display:flex;gap:8px;}
+.inp{padding:9px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.85rem;font-family:"DM Sans",sans-serif;color:var(--text);background:#FAFBFF;outline:none;}
+.inp:focus{border-color:var(--accent);}
+.btn-add{padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-size:.85rem;font-weight:700;font-family:"DM Sans",sans-serif;cursor:pointer;white-space:nowrap;}
+.btn-save{width:100%;padding:13px;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;border:none;border-radius:10px;font-size:.9rem;font-weight:700;font-family:"DM Sans",sans-serif;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-save:hover{opacity:.92;}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:600;color:white;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .3s ease;}
+.toast-item.success{background:#059669;}.toast-item.info{background:#2563EB;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+</style>
+</head>
+<body>
+<div id="toastContainer" class="toast-container"></div>
+<nav class="topnav">
+  <div class="brand">Health<span>Sync</span></div>
+  <a href="/dashboard" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</nav>
+<div class="wrap">
+  <h1>🔔 Reminders</h1>
+  <p class="sub">Manage your daily health entry and medication reminders.</p>
+
+  <div class="card">
+    <div class="sec"><i class="fas fa-bell"></i> Reminder Toggles</div>
+    <div class="reminder-row">
+      <div class="r-left">
+        <div class="r-icon blue"><i class="fas fa-heartbeat"></i></div>
+        <div class="r-info"><div class="r-title">Daily Health Entry</div><div class="r-desc">Remind me to log vitals every day</div></div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="dailyToggle" checked onchange="saveSettings()"><span class="slider"></span></label>
+    </div>
+    <div class="reminder-row">
+      <div class="r-left">
+        <div class="r-icon orange"><i class="fas fa-pills"></i></div>
+        <div class="r-info"><div class="r-title">Medication Reminder</div><div class="r-desc">Remind me to take my medications</div></div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="medToggle" checked onchange="saveSettings()"><span class="slider"></span></label>
+    </div>
+    <div class="reminder-row">
+      <div class="r-left">
+        <div class="r-icon green"><i class="fas fa-calendar-check"></i></div>
+        <div class="r-info"><div class="r-title">Appointment Reminder</div><div class="r-desc">Notify before upcoming appointments</div></div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="apptToggle" checked onchange="saveSettings()"><span class="slider"></span></label>
+    </div>
+    <div class="reminder-row">
+      <div class="r-left">
+        <div class="r-icon purple"><i class="fas fa-chart-line"></i></div>
+        <div class="r-info"><div class="r-title">Weekly Health Summary</div><div class="r-desc">Get weekly health trend summary</div></div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="weeklyToggle" onchange="saveSettings()"><span class="slider"></span></label>
+    </div>
+    <div class="time-row">
+      <div class="time-label">Daily reminder time</div>
+      <input type="time" class="time-input" id="dailyTime" value="08:00">
+      <button class="btn-add" onclick="saveSettings();showToast('Time saved!','success')">Set</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec"><i class="fas fa-pills"></i> Medication Reminders</div>
+    <div class="med-list" id="medList"></div>
+    <div class="add-row">
+      <input type="text" class="inp" id="medName" placeholder="Medication name e.g. Metformin" style="flex:1">
+      <input type="time" class="time-input" id="medTime" value="09:00">
+      <button class="btn-add" onclick="addMed()"><i class="fas fa-plus"></i> Add</button>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveAll()"><i class="fas fa-save"></i> Save All Settings</button>
+</div>
+<script>
+window.addEventListener('DOMContentLoaded',function(){
+  const s=JSON.parse(localStorage.getItem('hs_reminders')||'{}');
+  if(s.daily!==undefined)document.getElementById('dailyToggle').checked=s.daily;
+  if(s.med!==undefined)document.getElementById('medToggle').checked=s.med;
+  if(s.appt!==undefined)document.getElementById('apptToggle').checked=s.appt;
+  if(s.weekly!==undefined)document.getElementById('weeklyToggle').checked=s.weekly;
+  if(s.dailyTime)document.getElementById('dailyTime').value=s.dailyTime;
+  renderMeds();
+});
+function getMeds(){return JSON.parse(localStorage.getItem('hs_meds')||'[]');}
+function renderMeds(){
+  const meds=getMeds(),c=document.getElementById('medList');
+  if(!meds.length){c.innerHTML='<p style="font-size:.8rem;color:#94A3B8;margin-bottom:8px">No medication reminders yet.</p>';return;}
+  c.innerHTML=meds.map((m,i)=>`<div class="med-item"><div class="r-icon orange" style="width:32px;height:32px;font-size:.85rem;flex-shrink:0"><i class="fas fa-pills"></i></div><span class="med-name">${m.name}</span><span class="med-time">Daily at ${fmt(m.time)}</span><button class="med-del" onclick="delMed(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+}
+function addMed(){
+  const n=document.getElementById('medName').value.trim(),t=document.getElementById('medTime').value;
+  if(!n){showToast('Enter medication name','info');return;}
+  const meds=getMeds();meds.push({name:n,time:t});
+  localStorage.setItem('hs_meds',JSON.stringify(meds));
+  document.getElementById('medName').value='';renderMeds();showToast('Medication reminder added!','success');
+}
+function delMed(i){const meds=getMeds();meds.splice(i,1);localStorage.setItem('hs_meds',JSON.stringify(meds));renderMeds();}
+function saveSettings(){
+  localStorage.setItem('hs_reminders',JSON.stringify({
+    daily:document.getElementById('dailyToggle').checked,
+    med:document.getElementById('medToggle').checked,
+    appt:document.getElementById('apptToggle').checked,
+    weekly:document.getElementById('weeklyToggle').checked,
+    dailyTime:document.getElementById('dailyTime').value
+  }));
+}
+function saveAll(){saveSettings();showToast('All reminder settings saved! ✅','success');}
+function fmt(t){if(!t)return'';const[h,m]=t.split(':');const hr=parseInt(h);return(hr>12?hr-12:hr||12)+':'+m+' '+(hr>=12?'PM':'AM');}
+function showToast(msg,type){
+  const c=document.getElementById('toastContainer'),t=document.createElement('div');
+  t.className='toast-item '+type;t.innerHTML='<i class="fas fa-check-circle"></i><span>'+msg+'</span>';
+  c.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3500);
+}
+</script>
+</body>
+</html>

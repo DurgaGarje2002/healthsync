@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--blue:#2563EB;--blue-dk:#1D4ED8;--green:#10B981;--text:#0F172A;--muted:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--card:#FFFFFF;--shadow:0 12px 40px rgba(15,23,42,.07);--radius:16px;--tr:.2s ease;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+        .site-nav{position:sticky;top:0;z-index:100;padding:0 max(24px,6vw);height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(248,250,252,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+        .nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+        .nb-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));display:flex;align-items:center;justify-content:center;}
+        .nb-name{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text);}
+        .nb-name span{color:var(--blue);}
+        .nav-links{display:flex;gap:4px;}
+        .nav-links a{padding:7px 14px;border-radius:8px;font-size:.86rem;font-weight:500;color:var(--muted);text-decoration:none;transition:all var(--tr);}
+        .nav-links a:hover{color:var(--text);background:rgba(15,23,42,.05);}
+        .btn-nav{padding:8px 18px;border-radius:8px;background:var(--blue);color:white;font-size:.86rem;font-weight:600;text-decoration:none;transition:opacity var(--tr);}
+        .btn-nav:hover{opacity:.9;color:white;}
+
+        .contact-hero{padding:72px max(24px,8vw) 56px;text-align:center;background:linear-gradient(170deg,#EFF6FF,#F8FAFC);border-bottom:1px solid var(--border);}
+        .hero-pill{display:inline-flex;align-items:center;gap:7px;background:#EFF6FF;border:1px solid #BFDBFE;color:var(--blue);padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.4px;margin-bottom:18px;}
+        .contact-hero h1{font-family:'Sora',sans-serif;font-size:clamp(1.9rem,4.5vw,3rem);font-weight:800;margin-bottom:14px;}
+        .contact-hero h1 span{color:var(--blue);}
+        .contact-hero p{font-size:.97rem;color:var(--muted);max-width:480px;margin:0 auto;}
+
+        .contact-body{padding:72px max(24px,8vw);display:grid;grid-template-columns:1fr 1.6fr;gap:56px;align-items:start;}
+
+        .contact-info h2{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:10px;}
+        .contact-info p{font-size:.88rem;color:var(--muted);line-height:1.75;margin-bottom:32px;}
+        .info-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;}
+        .info-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+        .ii-blue{background:#EFF6FF;color:var(--blue);}
+        .ii-green{background:#F0FDF4;color:var(--green);}
+        .ii-purple{background:#F5F3FF;color:#7C3AED;}
+        .info-item h5{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+        .info-item p{font-size:.83rem;color:var(--muted);margin:0;line-height:1.5;}
+        .info-item a{color:var(--blue);text-decoration:none;font-weight:500;}
+        .info-item a:hover{text-decoration:underline;}
+        .social-row{display:flex;gap:10px;margin-top:28px;}
+        .sl{width:36px;height:36px;border-radius:9px;background:var(--bg);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:.85rem;text-decoration:none;transition:all var(--tr);}
+        .sl:hover{background:var(--blue);border-color:var(--blue);color:white;}
+
+        .contact-form-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow);}
+        .contact-form-wrap h3{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:24px;}
+        .field{margin-bottom:18px;}
+        .field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:7px;}
+        .field label span{color:#EF4444;}
+        .input-row{position:relative;}
+        .input-row .fi{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;pointer-events:none;}
+        .input-row input,.input-row select,.input-row textarea{width:100%;padding:11px 14px 11px 37px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'DM Sans',sans-serif;color:var(--text);background:white;outline:none;transition:border var(--tr),box-shadow var(--tr);}
+        .input-row textarea{padding-top:13px;resize:vertical;min-height:110px;}
+        .input-row input:focus,.input-row select:focus,.input-row textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+        .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+        .btn-send{width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));color:white;font-size:.92rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all var(--tr);margin-top:8px;box-shadow:0 6px 20px rgba(37,99,235,.25);}
+        .btn-send:hover:not(:disabled){opacity:.92;transform:translateY(-1px);}
+        .btn-send:disabled{opacity:.55;cursor:not-allowed;}
+        .form-alert{display:none;padding:12px 16px;border-radius:10px;font-size:.84rem;font-weight:500;margin-bottom:16px;}
+        .form-alert.show{display:flex;align-items:center;gap:8px;}
+        .form-alert.success{background:#F0FDF4;color:#15803D;border-left:3px solid var(--green);}
+        .form-alert.error{background:#FEF2F2;color:#DC2626;border-left:3px solid #EF4444;}
+
+        .faq-section{padding:72px max(24px,8vw);background:linear-gradient(170deg,#F0FDF4,#F8FAFC);}
+        .faq-section h2{font-family:'Sora',sans-serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin-bottom:8px;}
+        .faq-section p{font-size:.9rem;color:var(--muted);margin-bottom:36px;}
+        .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;cursor:pointer;transition:all var(--tr);}
+        .faq-item:hover{border-color:#BFDBFE;box-shadow:0 4px 16px rgba(37,99,235,.07);}
+        .faq-q{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+        .faq-q h5{font-size:.9rem;font-weight:700;color:var(--text);margin:0;}
+        .faq-q i{color:var(--muted);font-size:.8rem;transition:transform var(--tr);flex-shrink:0;}
+        .faq-item.open .faq-q i{transform:rotate(180deg);color:var(--blue);}
+        .faq-a{font-size:.84rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease,margin .3s ease;}
+        .faq-item.open .faq-a{max-height:200px;margin-top:12px;}
+
+        footer{background:#0F172A;padding:28px max(24px,6vw);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+        footer p{font-size:.8rem;color:#475569;}
+        .footer-links{display:flex;gap:20px;}
+        .footer-links a{font-size:.8rem;color:#475569;text-decoration:none;transition:color var(--tr);}
+        .footer-links a:hover{color:#F1F5F9;}
+
+        .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+        .reveal.visible{opacity:1;transform:translateY(0);}
+
+        @media(max-width:860px){
+            .contact-body{grid-template-columns:1fr;}
+            .faq-grid{grid-template-columns:1fr;}
+            .field-row{grid-template-columns:1fr;}
+            .nav-links{display:none;}
+        }
+    </style>
+</head>
+<body>
+
+<nav class="site-nav">
+    <a href="/" class="nav-brand">
+        <div class="nb-icon"><svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+        <span class="nb-name">Health<span>Sync</span></span>
+    </a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+    </div>
+    <a href="/login" class="btn-nav">Login</a>
+</nav>
+
+<section class="contact-hero">
+    <div class="hero-pill"><i class="fas fa-envelope"></i>GET IN TOUCH</div>
+    <h1>We'd love to <span>hear from you</span></h1>
+    <p>Have a question, feedback, or need support? Our team typically responds within 24 hours.</p>
+</section>
+
+<div class="contact-body">
+
+    <div class="contact-info reveal">
+        <h2>Let's talk</h2>
+        <p>Whether you're a user with a question or a healthcare organisation interested in HealthSync — we're here for you.</p>
+
+        <div class="info-item">
+            <div class="info-icon ii-blue"><i class="fas fa-envelope"></i></div>
+            <div>
+                <h5>Email Support</h5>
+                <p><a href="mailto:healthsync.help@gmail.com">healthsync.help@gmail.com</a></p>
+                <p style="margin-top:2px">Typical response: within 24 hours</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon ii-green"><i class="fas fa-phone-alt"></i></div>
+            <div>
+                <h5>Phone Support</h5>
+                <p><a href="tel:+911800123456">+91 1800-123-456</a> (Toll free)</p>
+                <p style="margin-top:2px">Mon&ndash;Sat, 9 AM &ndash; 6 PM IST</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon ii-purple"><i class="fas fa-map-marker-alt"></i></div>
+            <div>
+                <h5>Office</h5>
+                <p>HealthSync Technologies Pvt. Ltd.</p>
+                <p style="margin-top:2px">Pune, Maharashtra, India &mdash; 411001</p>
+            </div>
+        </div>
+
+        <div class="social-row">
+            <a href="#" class="sl"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="sl"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="sl"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="sl"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+
+    <div class="contact-form-wrap reveal">
+        <h3>Send us a message</h3>
+
+        <div class="form-alert" id="formAlert"></div>
+
+        <div class="field-row">
+            <div class="field">
+                <label>First Name <span>*</span></label>
+                <div class="input-row">
+                    <i class="fas fa-user fi"></i>
+                    <input type="text" id="firstName" placeholder="John">
+                </div>
+            </div>
+            <div class="field">
+                <label>Last Name</label>
+                <div class="input-row">
+                    <i class="fas fa-user fi"></i>
+                    <input type="text" id="lastName" placeholder="Doe">
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Email Address <span>*</span></label>
+            <div class="input-row">
+                <i class="fas fa-envelope fi"></i>
+                <input type="email" id="email" placeholder="you@example.com">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Subject <span>*</span></label>
+            <div class="input-row">
+                <i class="fas fa-tag fi"></i>
+                <select id="subject">
+                    <option value="">Select a topic</option>
+                    <option>General Inquiry</option>
+                    <option>Technical Support</option>
+                    <option>Account &amp; Billing</option>
+                    <option>Emergency Card Issue</option>
+                    <option>Feature Request</option>
+                    <option>Partnership</option>
+                    <option>Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Message <span>*</span></label>
+            <div class="input-row">
+                <i class="fas fa-comment fi" style="top:18px;transform:none"></i>
+                <textarea id="message" placeholder="Tell us how we can help you&hellip;"></textarea>
+            </div>
+        </div>
+
+        <button type="button" class="btn-send" id="sendBtn" onclick="submitContactForm()">
+            <span id="btnText"><i class="fas fa-paper-plane"></i>&nbsp;Send Message</span>
+            <span id="btnLoader" style="display:none"><i class="fas fa-spinner fa-spin"></i>&nbsp;Sending&hellip;</span>
+        </button>
+    </div>
+</div>
+
+<section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <p>Quick answers to the most common questions we receive.</p>
+    <div class="faq-grid" id="faqGrid"></div>
+</section>
+
+<footer>
+    <p>&copy; 2026 HealthSync &middot; All rights reserved</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+    </div>
+</footer>
+
+<script>
+var faqs = [
+    { q: 'Is HealthSync free to use?',
+      a: 'Yes! HealthSync is completely free for individual users. Create an account, track your health, and generate your emergency card at no cost.' },
+    { q: 'How secure is my health data?',
+      a: 'We use JWT authentication, industry-standard encryption, and secure cloud storage. Your data is never sold or shared with third parties.' },
+    { q: 'What is the Emergency Card feature?',
+      a: 'You can create a digital medical ID with your health information and allergies. A QR code is generated that medical responders can scan in an emergency.' },
+    { q: 'Can I delete my account and data?',
+      a: 'Yes. You can permanently delete your account and all associated data from your Profile Settings page at any time.' },
+    { q: 'How do I reset my password?',
+      a: 'Click Forgot Password on the login page, enter your email, and we will send you a reset link. The link expires after 1 hour.' },
+    { q: 'Is my data backed up?',
+      a: 'Yes, all data is automatically backed up to secure cloud storage. You can also export your health records at any time.' }
+];
+
+var grid = document.getElementById('faqGrid');
+faqs.forEach(function(f) {
+    var el = document.createElement('div');
+    el.className = 'faq-item reveal';
+    el.innerHTML = '<div class="faq-q"><h5>' + f.q + '</h5><i class="fas fa-chevron-down"></i></div><div class="faq-a">' + f.a + '</div>';
+    el.addEventListener('click', function() {
+        var wasOpen = el.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(function(x) { x.classList.remove('open'); });
+        if (!wasOpen) el.classList.add('open');
+    });
+    grid.appendChild(el);
+});
+
+function submitContactForm() {
+    var firstName = document.getElementById('firstName').value.trim();
+    var email     = document.getElementById('email').value.trim();
+    var subject   = document.getElementById('subject').value;
+    var message   = document.getElementById('message').value.trim();
+    var alertEl   = document.getElementById('formAlert');
+    var btn       = document.getElementById('sendBtn');
+
+    if (!firstName || !email || !subject || !message) {
+        alertEl.className = 'form-alert show error';
+        alertEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all required fields.';
+        setTimeout(function() { alertEl.classList.remove('show'); }, 4000);
+        return;
+    }
+
+    btn.disabled = true;
+    document.getElementById('btnText').style.display   = 'none';
+    document.getElementById('btnLoader').style.display = 'flex';
+    alertEl.classList.remove('show');
+
+    setTimeout(function() {
+        alertEl.className = 'form-alert show success';
+        alertEl.innerHTML = '<i class="fas fa-check-circle"></i> Message sent! We will get back to you within 24 hours.';
+
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value  = '';
+        document.getElementById('email').value     = '';
+        document.getElementById('subject').value   = '';
+        document.getElementById('message').value   = '';
+
+        btn.disabled = false;
+        document.getElementById('btnText').style.display   = 'flex';
+        document.getElementById('btnLoader').style.display = 'none';
+
+        setTimeout(function() { alertEl.classList.remove('show'); }, 6000);
+    }, 1500);
+}
+
+var ro = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            ro.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(function(el) { ro.observe(el); });
+</script>
+</body>
+</html>

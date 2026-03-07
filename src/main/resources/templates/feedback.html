@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Feedback — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#F0F4FF;--surface:#fff;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--accent:#2563EB;--r:14px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+.topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.brand{font-family:"Sora",sans-serif;font-size:1rem;font-weight:800;}.brand span{color:var(--accent);}
+.nav-back{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.85rem;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.nav-back:hover{background:var(--bg);}
+.wrap{max-width:720px;margin:0 auto;padding:36px 20px 60px;}
+h1{font-family:"Sora",sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+.sub{font-size:.87rem;color:var(--muted);margin-bottom:28px;}
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.05);padding:28px;margin-bottom:20px;}
+.sec{font-size:.7rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.sec i{color:var(--accent);}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:.82rem;font-weight:600;margin-bottom:5px;}
+.req{color:#EF4444;margin-left:2px;}
+.inp{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:.87rem;font-family:"DM Sans",sans-serif;color:var(--text);background:#FAFBFF;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.stars{display:flex;gap:6px;margin-bottom:4px;}
+.star{font-size:1.6rem;cursor:pointer;color:#E2E8F0;transition:color .15s;}
+.star.active,.star:hover{color:#F59E0B;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.btn-submit{width:100%;padding:13px;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;border:none;border-radius:10px;font-size:.9rem;font-weight:700;font-family:"DM Sans",sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+.btn-submit:hover{opacity:.92;}
+.support-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F1F5F9;}
+.support-item:last-child{border-bottom:none;}
+.s-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.s-icon.blue{background:#EFF6FF;color:#2563EB;}
+.s-icon.green{background:#F0FDF4;color:#16A34A;}
+.s-icon.orange{background:#FFF7ED;color:#EA580C;}
+.s-title{font-size:.87rem;font-weight:600;}
+.s-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.s-link{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--accent);text-decoration:none;}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:600;color:white;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .3s ease;}
+.toast-item.success{background:#059669;}.toast-item.error{background:#DC2626;}.toast-item.info{background:#2563EB;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@media(max-width:600px){.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="toastContainer" class="toast-container"></div>
+<nav class="topnav">
+  <div class="brand">Health<span>Sync</span></div>
+  <a href="/dashboard" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</nav>
+<div class="wrap">
+  <h1>💬 Feedback & Support</h1>
+  <p class="sub">Share your experience or report an issue. We read every message.</p>
+
+  <div class="card">
+    <div class="sec"><i class="fas fa-comment-dots"></i> Submit Feedback</div>
+    <div class="row2">
+      <div class="fg">
+        <label>Feedback Type <span class="req">*</span></label>
+        <select class="inp" id="feedbackType">
+          <option value="GENERAL">General Feedback</option>
+          <option value="BUG">Bug Report</option>
+          <option value="FEATURE">Feature Request</option>
+          <option value="COMPLAINT">Complaint</option>
+          <option value="COMPLIMENT">Compliment</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Subject <span class="req">*</span></label>
+        <input type="text" class="inp" id="subject" placeholder="Brief subject line">
+      </div>
+    </div>
+    <div class="fg">
+      <label>Your Message <span class="req">*</span></label>
+      <textarea class="inp" id="message" rows="5" placeholder="Describe your feedback in detail..."></textarea>
+    </div>
+    <div class="fg">
+      <label>Overall Rating</label>
+      <div class="stars" id="starsRow">
+        <span class="star" onclick="setRating(1)">★</span>
+        <span class="star" onclick="setRating(2)">★</span>
+        <span class="star" onclick="setRating(3)">★</span>
+        <span class="star" onclick="setRating(4)">★</span>
+        <span class="star" onclick="setRating(5)">★</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted)" id="ratingLabel">Click to rate</div>
+    </div>
+    <button class="btn-submit" onclick="submitFeedback()"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+  </div>
+
+  <div class="card">
+    <div class="sec"><i class="fas fa-headset"></i> Contact Support</div>
+    <div class="support-item">
+      <div class="s-icon blue"><i class="fas fa-envelope"></i></div>
+      <div><div class="s-title">Email Support</div><div class="s-desc">Get help via email within 24 hours</div></div>
+      <a href="mailto:support@healthsync.com" class="s-link">support@healthsync.com</a>
+    </div>
+    <div class="support-item">
+      <div class="s-icon green"><i class="fas fa-book"></i></div>
+      <div><div class="s-title">Help Documentation</div><div class="s-desc">Browse guides and FAQs</div></div>
+      <a href="/about" class="s-link">View Docs →</a>
+    </div>
+    <div class="support-item">
+      <div class="s-icon orange"><i class="fas fa-bug"></i></div>
+      <div><div class="s-title">Report a Bug</div><div class="s-desc">Help us improve HealthSync</div></div>
+	  <a href="#" class="s-link" onclick="document.getElementById('feedbackType').value='BUG';window.scrollTo({top:0,behavior:'smooth'});return false;">Report →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedRating = null;
+function setRating(n){
+  selectedRating=n;
+  document.querySelectorAll('.star').forEach((s,i)=>{s.classList.toggle('active',i<n);});
+  const labels=['','Poor','Fair','Good','Very Good','Excellent'];
+  document.getElementById('ratingLabel').textContent=labels[n]+' ('+n+'/5)';
+}
+
+async function submitFeedback(){
+  const token=localStorage.getItem('token')||sessionStorage.getItem('token');
+  const userId=localStorage.getItem('userId')||sessionStorage.getItem('userId');
+  if(!token){showToast('Please login first','error');return;}
+  const type=document.getElementById('feedbackType').value;
+  const subject=document.getElementById('subject').value.trim();
+  const message=document.getElementById('message').value.trim();
+  if(!subject){showToast('Please enter a subject','error');return;}
+  if(!message){showToast('Please enter your message','error');return;}
+  try{
+    const res=await fetch('/api/feedback',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({userId,feedbackType:type,subject,message,rating:selectedRating})
+    });
+    if(!res.ok)throw new Error();
+    showToast('Feedback submitted! Thank you 🎉','success');
+    document.getElementById('subject').value='';
+    document.getElementById('message').value='';
+    document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+    selectedRating=null;
+    document.getElementById('ratingLabel').textContent='Click to rate';
+  }catch(e){showToast('Failed to submit. Try again.','error');}
+}
+
+function showToast(msg,type){
+  const c=document.getElementById('toastContainer'),t=document.createElement('div');
+  t.className='toast-item '+type;
+  const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  t.innerHTML='<i class="fas '+icons[type]+'"></i><span>'+msg+'</span>';
+  c.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},4000);
+}
+</script>
+</body>
+</html>

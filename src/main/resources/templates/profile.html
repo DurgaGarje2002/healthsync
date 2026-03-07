@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings — HealthSync</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+
+    <style>
+        /* ── Profile-specific overrides ─────────────────────── */
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* LEFT COLUMN — avatar card */
+        .profile-identity-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            position: sticky;
+            top: 88px;
+        }
+
+        .identity-banner {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            height: 80px;
+            position: relative;
+        }
+
+        .identity-body {
+            padding: 0 24px 24px;
+            text-align: center;
+        }
+
+        .profile-avatar-xl {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            font-family: 'Sora', sans-serif;
+            font-size: 2rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid white;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            margin: -40px auto 16px;
+            position: relative;
+        }
+
+        .profile-name-lg {
+            font-family: 'Sora', sans-serif;
+            font-size: 1rem; font-weight: 700;
+            color: var(--text-primary); margin-bottom: 4px;
+        }
+        .profile-email-sm {
+            font-size: 0.78rem; color: var(--text-muted); margin-bottom: 20px;
+        }
+
+        .identity-meta {
+            display: flex; flex-direction: column; gap: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .meta-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.82rem;
+        }
+        .meta-item i {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            background: var(--bg-base);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        .meta-label { font-size: 0.68rem; color: var(--text-muted); display: block; }
+        .meta-value { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+
+        .back-link {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px;
+            margin: 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-base);
+            color: var(--text-secondary);
+            font-size: 0.82rem; font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition);
+            border: 1px solid var(--border);
+        }
+        .back-link:hover { background: #DBEAFE; color: var(--accent-blue); border-color: var(--accent-blue); }
+
+        /* RIGHT COLUMN — settings panels */
+        .settings-stack { display: flex; flex-direction: column; gap: 20px; }
+
+        .settings-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .sp-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .sp-icon {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .sp-icon.blue   { background: #DBEAFE; color: var(--accent-blue); }
+        .sp-icon.green  { background: #D1FAE5; color: var(--accent-green); }
+        .sp-icon.purple { background: #EDE9FE; color: var(--accent-purple); }
+        .sp-icon.red    { background: #FEE2E2; color: var(--accent-red); }
+
+        .sp-header h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+            color: var(--text-primary); margin: 0;
+        }
+        .sp-header p {
+            font-size: 0.75rem; color: var(--text-muted); margin: 0;
+        }
+
+        .sp-body { padding: 24px; }
+
+        /* Toggle Switch */
+        .notif-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .notif-item:last-of-type { border-bottom: none; }
+
+        .notif-text .notif-title {
+            font-size: 0.87rem; font-weight: 600; color: var(--text-primary);
+        }
+        .notif-text .notif-sub {
+            font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 42px; height: 24px;
+            flex-shrink: 0;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-track {
+            position: absolute; inset: 0;
+            background: var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+        .toggle-track::before {
+            content: '';
+            position: absolute;
+            left: 3px; top: 3px;
+            width: 18px; height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform var(--transition);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .toggle input:checked + .toggle-track { background: var(--accent-green); }
+        .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
+
+        /* Password strength */
+        .pw-strength {
+            height: 4px; border-radius: 2px;
+            background: var(--bg-base); margin-top: 8px;
+            overflow: hidden;
+        }
+        .pw-strength-fill {
+            height: 100%; border-radius: 2px;
+            transition: width 0.4s ease, background 0.4s ease;
+            width: 0%;
+        }
+        .pw-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* Danger zone */
+        .danger-panel {
+            border: 1.5px solid #FECACA;
+            background: #FFF5F5;
+        }
+        .danger-panel .sp-header { border-color: #FECACA; background: #FEF2F2; }
+
+        /* password eye toggle */
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 40px; }
+        .pw-eye {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none;
+            color: var(--text-muted); cursor: pointer;
+            font-size: 0.85rem; z-index: 2;
+        }
+        .pw-eye:hover { color: var(--text-primary); }
+
+        /* email readonly */
+        .readonly-field {
+            background: var(--bg-base) !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 900px) {
+            .profile-layout { grid-template-columns: 1fr; }
+            .profile-identity-card { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-core">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring delay-1"></div>
+        <svg class="heart-loader" viewBox="0 0 24 24" fill="white" width="28" height="28">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+    </div>
+</div>
+
+<!-- Sidebar (same as dashboard) -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="white" width="18" height="18">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">HealthSync</span>
+                <span class="brand-sub">Patient Portal</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="user-avatar-lg" id="sidebarAvatar">U</div>
+        <div class="user-details">
+            <div class="user-name-sb" id="sidebarName">Loading...</div>
+            <div class="user-email-sb" id="sidebarEmail"><span id="sidebarEmailDisplay">loading...</span></div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>Overview</span>
+        </a>
+        <a href="/dashboard#records" class="nav-item">
+            <i class="fas fa-file-medical-alt"></i>
+            <span>Health Records</span>
+        </a>
+        <a href="/dashboard#documents" class="nav-item">
+            <i class="fas fa-folder-open"></i>
+            <span>Documents</span>
+        </a>
+        <a href="/dashboard#add-record" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Record</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="/profile" class="nav-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>My Profile</span>
+        </a>
+        <a href="/emergency-card-setup" class="nav-item">
+            <i class="fas fa-id-card"></i>
+            <span>Emergency Card</span>
+            <span class="emergency-dot"></span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="btn-logout-sb" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Wrapper -->
+<div class="main-wrapper" id="mainWrapper">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-title">
+                <h1>Profile Settings</h1>
+                <p class="page-subtitle">Manage your personal information and preferences</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <a href="/dashboard" class="topbar-btn" style="text-decoration:none">
+                <i class="fas fa-arrow-left"></i>
+                <span class="btn-label">Back to Dashboard</span>
+            </a>
+            <div class="topbar-avatar" id="topbarAvatar">U</div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content-section active">
+        <div class="profile-layout">
+
+            <!-- LEFT: Identity Card -->
+            <div>
+                <div class="profile-identity-card">
+                    <div class="identity-banner"></div>
+                    <div class="identity-body">
+                        <div class="profile-avatar-xl" id="profileAvatarXL">U</div>
+                        <div class="profile-name-lg" id="profileDisplayName">User Name</div>
+                        <div class="profile-email-sm" id="profileDisplayEmail"><span id="sidebarEmailDisplay">loading...</span></div>
+
+                        <div class="identity-meta" id="identityMeta">
+                            <div class="meta-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <span class="meta-label">Phone</span>
+                                    <span class="meta-value" id="metaPhone">Not set</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-birthday-cake"></i>
+                                <div>
+                                    <span class="meta-label">Date of Birth</span>
+                                    <span class="meta-value" id="metaDob">Not set</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-venus-mars"></i>
+                                <div>
+                                    <span class="meta-label">Gender</span>
+                                    <span class="meta-value" id="metaGender">Not set</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-tint"></i>
+                                <div>
+                                    <span class="meta-label">Blood Group</span>
+                                    <span class="meta-value" id="metaBlood">Not set</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/dashboard" class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT: Settings Panels -->
+            <div class="settings-stack">
+
+                <!-- Personal Info -->
+                <div class="settings-panel">
+                    <div class="sp-header">
+                        <div class="sp-icon blue"><i class="fas fa-user"></i></div>
+                        <div>
+                            <h3>Personal Information</h3>
+                            <p>Update your name, contact details and medical info</p>
+                        </div>
+                    </div>
+                    <div class="sp-body">
+                        <form id="profileForm" onsubmit="saveProfile(event)">
+                            <div class="form-row-grid">
+                                <div class="field-group">
+                                    <label>Full Name <span class="required">*</span></label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-user input-icon"></i>
+                                        <input type="text" id="profileNameInput" placeholder="Your full name" required>
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label>Email Address</label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-envelope input-icon"></i>
+                                        <input type="email" id="profileEmailInput" class="readonly-field" readonly>
+                                    </div>
+                                    <span class="pw-hint"><i class="fas fa-lock me-1"></i>Email cannot be changed</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row-grid" style="margin-top:16px">
+                                <div class="field-group">
+                                    <label>Phone Number</label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-phone input-icon"></i>
+                                        <input type="tel" id="phoneNumber" placeholder="+91 98765 43210">
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label>Date of Birth</label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-calendar input-icon"></i>
+                                        <input type="date" id="dateOfBirth">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row-grid" style="margin-top:16px">
+                                <div class="field-group">
+                                    <label>Gender</label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-venus-mars input-icon"></i>
+                                        <select id="gender">
+                                            <option value="">Select gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label>Blood Group</label>
+                                    <div class="input-wrap">
+                                        <i class="fas fa-tint input-icon"></i>
+                                        <select id="bloodGroup">
+                                            <option value="">Select blood group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="reset" class="btn-ghost" onclick="loadPreferences()">
+                                    <i class="fas fa-undo me-2"></i>Reset
+                                </button>
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="settings-panel">
+                    <div class="sp-header">
+                        <div class="sp-icon purple"><i class="fas fa-lock"></i></div>
+                        <div>
+                            <h3>Change Password</h3>
+                            <p>Use a strong password you don't use elsewhere</p>
+                        </div>
+                    </div>
+                    <div class="sp-body">
+                        <form id="passwordForm" onsubmit="changePassword(event)">
+                            <div class="field-group" style="margin-bottom:16px">
+                                <label>Current Password <span class="required">*</span></label>
+                                <div class="input-wrap pw-wrap">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                                    <button type="button" class="pw-eye" onclick="togglePw('currentPassword', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row-grid">
+                                <div class="field-group">
+                                    <label>New Password <span class="required">*</span></label>
+                                    <div class="input-wrap pw-wrap">
+                                        <i class="fas fa-key input-icon"></i>
+                                        <input type="password" id="newPassword" placeholder="Min. 6 characters"
+                                               required minlength="6" oninput="checkStrength(this.value)">
+                                        <button type="button" class="pw-eye" onclick="togglePw('newPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="pw-strength">
+                                        <div class="pw-strength-fill" id="pwStrengthBar"></div>
+                                    </div>
+                                    <div class="pw-hint" id="pwStrengthLabel"></div>
+                                </div>
+                                <div class="field-group">
+                                    <label>Confirm New Password <span class="required">*</span></label>
+                                    <div class="input-wrap pw-wrap">
+                                        <i class="fas fa-key input-icon"></i>
+                                        <input type="password" id="confirmPassword" placeholder="Re-enter new password"
+                                               required minlength="6">
+                                        <button type="button" class="pw-eye" onclick="togglePw('confirmPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="reset" class="btn-ghost">
+                                    <i class="fas fa-undo me-2"></i>Clear
+                                </button>
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-key me-2"></i>Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-panel">
+                    <div class="sp-header">
+                        <div class="sp-icon green"><i class="fas fa-bell"></i></div>
+                        <div>
+                            <h3>Notification Preferences</h3>
+                            <p>Choose what alerts you'd like to receive</p>
+                        </div>
+                    </div>
+                    <div class="sp-body">
+                        <div class="notif-item">
+                            <div class="notif-text">
+                                <div class="notif-title">Email Notifications</div>
+                                <div class="notif-sub">Receive health reminders and updates via email</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-text">
+                                <div class="notif-title">Health Record Reminders</div>
+                                <div class="notif-sub">Get reminded to log your health metrics</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="recordReminders" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-text">
+                                <div class="notif-title">Appointment Alerts</div>
+                                <div class="notif-sub">Notifications for upcoming medical appointments</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="appointmentAlerts">
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                        <div class="notif-item" style="border-bottom:none">
+                            <div class="notif-text">
+                                <div class="notif-title">Emergency Alerts</div>
+                                <div class="notif-sub">Critical health and safety notifications</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="emergencyAlerts" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-submit" onclick="saveNotifications()">
+                                <i class="fas fa-save me-2"></i>Save Preferences
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-panel danger-panel">
+                    <div class="sp-header">
+                        <div class="sp-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <h3 style="color:var(--accent-red)">Danger Zone</h3>
+                            <p>Irreversible actions — proceed with caution</p>
+                        </div>
+                    </div>
+                    <div class="sp-body">
+                        <p style="font-size:0.87rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">
+                            Deleting your account is <strong>permanent and cannot be undone</strong>. All your health records,
+                            documents, and personal data will be immediately removed from our systems.
+                        </p>
+                        <button class="btn-submit" style="background:linear-gradient(135deg,#EF4444,#DC2626);box-shadow:none" onclick="deleteAccount()">
+                            <i class="fas fa-trash me-2"></i>Delete My Account
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /settings-stack -->
+        </div><!-- /profile-layout -->
+    </div><!-- /content-section -->
+</div><!-- /main-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── Auth check ──────────────────────────────────────────────
+const token    = localStorage.getItem('token')    || sessionStorage.getItem('token');
+const userId   = localStorage.getItem('userId')   || sessionStorage.getItem('userId');
+const userName = localStorage.getItem('userName') || sessionStorage.getItem('userName');
+const userEmail= localStorage.getItem('email')    || sessionStorage.getItem('email');
+
+if (!token || !userId) window.location.href = '/login';
+
+// ── Init ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const initials = userName
+        ? userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)
+        : 'U';
+
+    ['sidebarAvatar','profileAvatarXL','topbarAvatar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = initials;
+    });
+
+    if (userName) {
+        document.getElementById('sidebarName').textContent = userName;
+        document.getElementById('profileDisplayName').textContent = userName;
+        document.getElementById('profileNameInput').value = userName;
+    }
+    if (userEmail) {
+        document.getElementById('sidebarEmail').textContent = userEmail;
+        document.getElementById('profileDisplayEmail').textContent = userEmail;
+        document.getElementById('profileEmailInput').value = userEmail;
+    }
+
+    loadPreferences();
+
+    // Mobile sidebar
+    const btn = document.getElementById('mobileMenuBtn');
+    const sb  = document.getElementById('sidebar');
+    if (btn && sb) {
+        btn.addEventListener('click', () => sb.classList.toggle('open'));
+        document.addEventListener('click', e => {
+            if (!sb.contains(e.target) && !btn.contains(e.target)) sb.classList.remove('open');
+        });
+    }
+});
+
+// ── Load saved prefs ─────────────────────────────────────────
+function loadPreferences() {
+    const fields = {
+        phoneNumber: localStorage.getItem('userPhone'),
+        dateOfBirth: localStorage.getItem('userDob'),
+        gender:      localStorage.getItem('userGender'),
+        bloodGroup:  localStorage.getItem('userBlood')
+    };
+    Object.entries(fields).forEach(([id, val]) => {
+        if (val) document.getElementById(id).value = val;
+    });
+
+    document.getElementById('emailNotifications').checked = localStorage.getItem('emailNotif') !== 'false';
+    document.getElementById('recordReminders').checked    = localStorage.getItem('recordRemind') !== 'false';
+    document.getElementById('appointmentAlerts').checked  = localStorage.getItem('appointAlert') === 'true';
+    document.getElementById('emergencyAlerts').checked    = localStorage.getItem('emergencyAlert') !== 'false';
+
+    refreshIdentityCard();
+}
+
+function refreshIdentityCard() {
+    const phone  = document.getElementById('phoneNumber').value;
+    const dob    = document.getElementById('dateOfBirth').value;
+    const gender = document.getElementById('gender').value;
+    const blood  = document.getElementById('bloodGroup').value;
+
+    document.getElementById('metaPhone').textContent  = phone  || 'Not set';
+    document.getElementById('metaDob').textContent    = dob    ? new Date(dob).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : 'Not set';
+    document.getElementById('metaGender').textContent = gender || 'Not set';
+    document.getElementById('metaBlood').textContent  = blood  || 'Not set';
+}
+
+// ── Save Profile ──────────────────────────────────────────────
+async function saveProfile(e) {
+    e.preventDefault();
+
+    const newName = document.getElementById('profileNameInput').value.trim();
+    const phone   = document.getElementById('phoneNumber').value.trim();
+    const dob     = document.getElementById('dateOfBirth').value;
+    const gender  = document.getElementById('gender').value;
+    const blood   = document.getElementById('bloodGroup').value;
+
+    if (!newName) { showToast('Name is required', 'error'); return; }
+
+    showLoading();
+    try {
+        const res = await fetch(`/api/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName, phone, dateOfBirth: dob, gender, bloodGroup: blood })
+        });
+        if (!res.ok) throw new Error('Failed to update');
+
+        // Update localStorage with new values
+        localStorage.setItem('userName', newName);
+        sessionStorage.setItem('userName', newName);
+        localStorage.setItem('userPhone', phone);
+        localStorage.setItem('userDob', dob);
+        localStorage.setItem('userGender', gender);
+        localStorage.setItem('userBlood', blood);
+
+        const initials = newName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        ['sidebarAvatar','profileAvatarXL','topbarAvatar'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.textContent = initials;
+        });
+        document.getElementById('sidebarName').textContent = newName;
+        document.getElementById('profileDisplayName').textContent = newName;
+
+        refreshIdentityCard();
+        showToast('Profile updated successfully! 🎉', 'success');
+    } catch {
+        showToast('Failed to save profile. Please try again.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// ── Change Password ───────────────────────────────────────────
+async function changePassword(e) {
+    e.preventDefault();
+
+    const curr    = document.getElementById('currentPassword').value;
+    const newPw   = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+
+    if (!curr) { showToast('Please enter your current password', 'error'); return; }
+    if (newPw !== confirm) { showToast('New passwords do not match', 'error'); return; }
+    if (newPw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+
+    showLoading();
+    try {
+        const res = await fetch(`/api/users/${userId}/password`, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword: curr, newPassword: newPw })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        showToast('Password updated successfully! 🔒', 'success');
+        document.getElementById('passwordForm').reset();
+        document.getElementById('pwStrengthBar').style.width = '0%';
+        document.getElementById('pwStrengthLabel').textContent = '';
+    } catch(err) {
+        showToast(err.message || 'Failed to update password', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// ── Password Strength ─────────────────────────────────────────
+function checkStrength(val) {
+    const bar   = document.getElementById('pwStrengthBar');
+    const label = document.getElementById('pwStrengthLabel');
+    if (!bar || !label) return;
+
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+        { pct: '20%', color: '#EF4444', text: 'Very weak' },
+        { pct: '40%', color: '#F59E0B', text: 'Weak' },
+        { pct: '60%', color: '#FBBF24', text: 'Fair' },
+        { pct: '80%', color: '#10B981', text: 'Strong' },
+        { pct: '100%',color: '#059669', text: 'Very strong' },
+    ];
+    const lvl = levels[Math.max(0, score - 1)] || levels[0];
+    bar.style.width = val ? lvl.pct : '0%';
+    bar.style.background = lvl.color;
+    label.textContent = val ? lvl.text : '';
+    label.style.color = lvl.color;
+}
+
+// ── Toggle Password Visibility ────────────────────────────────
+function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+// ── Save Notifications ────────────────────────────────────────
+function saveNotifications() {
+    localStorage.setItem('emailNotif',    document.getElementById('emailNotifications').checked);
+    localStorage.setItem('recordRemind',  document.getElementById('recordReminders').checked);
+    localStorage.setItem('appointAlert',  document.getElementById('appointmentAlerts').checked);
+    localStorage.setItem('emergencyAlert',document.getElementById('emergencyAlerts').checked);
+    showToast('Notification preferences saved!', 'success');
+}
+
+// ── Delete Account ────────────────────────────────────────────
+async function deleteAccount() {
+    if (!confirm('Are you absolutely sure you want to delete your account?')) return;
+    if (!confirm('This is PERMANENT and cannot be undone. All health data will be lost.')) return;
+
+    const typed = prompt('Type your email address to confirm:');
+    if (typed !== userEmail) {
+        showToast('Email did not match. Deletion cancelled.', 'error');
+        return;
+    }
+
+    showLoading();
+    try {
+        const res = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed to delete account');
+        hideLoading();
+        showToast('Account deleted. Goodbye! 👋', 'info');
+        setTimeout(() => { localStorage.clear(); sessionStorage.clear(); window.location.href = '/'; }, 1800);
+    } catch(err) {
+        hideLoading();
+        showToast(err.message || 'Failed to delete account', 'error');
+    }
+}
+
+// ── Logout ────────────────────────────────────────────────────
+function logout() {
+    localStorage.clear(); sessionStorage.clear();
+    window.location.href = '/login';
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    const t = document.createElement('div');
+    t.className = `toast-item ${type}`;
+    t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
+    container.appendChild(t);
+    setTimeout(() => {
+        t.style.transition = 'all 0.3s ease';
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(20px)';
+        setTimeout(() => t.remove(), 300);
+    }, 4500);
+}
+
+// ── Loading ────────�
+// ── Loading ───────────────────────────────────────────────────
+function showLoading() {
+    const el = document.getElementById('loadingOverlay');
+    if (el) el.style.display = 'flex';
+}
+
+function hideLoading() {
+    const el = document.getElementById('loadingOverlay');
+    if (el) el.style.display = 'none';
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 — Access Denied | HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:#0F172A;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
+        .bg-glow{position:fixed;width:500px;height:500px;border-radius:50%;filter:blur(120px);opacity:.25;pointer-events:none;}
+        .glow-1{background:radial-gradient(circle,#EF4444,transparent);top:-200px;right:-100px;}
+        .glow-2{background:radial-gradient(circle,#3B82F6,transparent);bottom:-200px;left:-100px;}
+        .err-box{position:relative;z-index:1;background:#1E293B;border:1px solid #334155;border-radius:24px;padding:56px 48px;max-width:580px;width:100%;text-align:center;animation:up .5s ease;}
+        @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+        .err-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#FCA5A5;padding:6px 16px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.8px;margin-bottom:24px;}
+        .err-code{font-family:'Sora',sans-serif;font-size:6rem;font-weight:800;line-height:1;background:linear-gradient(135deg,#EF4444,#DC2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;}
+        .err-title{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:700;color:#F1F5F9;margin-bottom:12px;}
+        .err-desc{color:#94A3B8;font-size:.9rem;line-height:1.7;margin-bottom:28px;}
+        .err-reasons{background:#0F172A;border:1px solid #334155;border-left:3px solid #EF4444;border-radius:12px;padding:18px 20px;margin-bottom:28px;text-align:left;}
+        .err-reasons h4{font-size:.78rem;font-weight:700;color:#FCA5A5;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
+        .reason-item{display:flex;align-items:center;gap:10px;font-size:.83rem;color:#94A3B8;margin-bottom:8px;}
+        .reason-item:last-child{margin-bottom:0;}
+        .reason-item i{color:#EF4444;font-size:.75rem;width:14px;text-align:center;}
+        .err-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+        .btn-e{padding:11px 24px;border-radius:10px;font-size:.85rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s ease;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+        .btn-primary-e{background:linear-gradient(135deg,#2563EB,#1D4ED8);color:white;}
+        .btn-primary-e:hover{opacity:.9;transform:translateY(-1px);}
+        .btn-ghost-e{background:rgba(255,255,255,.05);color:#94A3B8;border:1px solid #334155;}
+        .btn-ghost-e:hover{background:rgba(255,255,255,.08);color:#F1F5F9;}
+    </style>
+</head>
+<body>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="err-box">
+        <div class="err-badge"><i class="fas fa-ban"></i>ACCESS DENIED</div>
+        <div class="err-code">403</div>
+        <h1 class="err-title">You Shall Not Pass</h1>
+        <p class="err-desc">You don't have permission to access this page. This area may be restricted to specific roles.</p>
+        <div class="err-reasons">
+            <h4>Possible Reasons</h4>
+            <div class="reason-item"><i class="fas fa-circle"></i>You need to be logged in to access this page</div>
+            <div class="reason-item"><i class="fas fa-circle"></i>Your account lacks the required permissions</div>
+            <div class="reason-item"><i class="fas fa-circle"></i>This page is restricted to admin users only</div>
+            <div class="reason-item"><i class="fas fa-circle"></i>Your session may have expired — try logging in again</div>
+        </div>
+        <div class="err-btns">
+            <a href="/login" class="btn-e btn-primary-e"><i class="fas fa-sign-in-alt"></i>Login</a>
+            <a href="/dashboard" class="btn-e btn-ghost-e"><i class="fas fa-th-large"></i>Dashboard</a>
+            <a href="/" class="btn-e btn-ghost-e"><i class="fas fa-home"></i>Home</a>
+        </div>
+    </div>
+</body>
+</html>

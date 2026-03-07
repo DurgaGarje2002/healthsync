@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 — Server Error | HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0F172A;position:relative;overflow:hidden;}
+        .glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;}
+        .g1{width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,.15),transparent);top:-200px;right:-100px;}
+        .g2{width:500px;height:500px;background:radial-gradient(circle,rgba(239,68,68,.12),transparent);bottom:-100px;left:-100px;}
+
+        .err-box{position:relative;z-index:1;max-width:560px;width:100%;text-align:center;animation:up .5s ease;}
+        @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+        .err-code{font-family:'Sora',sans-serif;font-size:clamp(5rem,18vw,9rem);font-weight:800;line-height:1;background:linear-gradient(135deg,#FCD34D,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+        .err-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#FCD34D;padding:5px 16px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.8px;margin-bottom:20px;}
+        .err-title{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;color:#F1F5F9;margin-bottom:10px;}
+        .err-desc{color:#94A3B8;font-size:.9rem;line-height:1.7;margin-bottom:32px;max-width:380px;margin-inline:auto;}
+        .err-visual{font-size:5rem;margin-bottom:12px;display:block;animation:spin 4s linear infinite;}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
+        .what-to-do{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px 24px;margin-bottom:28px;text-align:left;}
+        .what-to-do h4{font-size:.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;}
+        .do-item{display:flex;align-items:center;gap:10px;font-size:.84rem;color:#94A3B8;margin-bottom:10px;}
+        .do-item:last-child{margin-bottom:0;}
+        .do-item i{width:18px;height:18px;border-radius:5px;background:rgba(245,158,11,.15);color:#F59E0B;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;}
+
+        .countdown{font-size:.78rem;color:#64748B;margin-bottom:24px;}
+        .countdown span{color:#F59E0B;font-weight:700;}
+
+        .err-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+        .btn-e{padding:11px 22px;border-radius:10px;font-size:.85rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+        .btn-amber{background:linear-gradient(135deg,#F59E0B,#D97706);color:white;box-shadow:0 6px 20px rgba(245,158,11,.25);}
+        .btn-amber:hover{opacity:.9;transform:translateY(-1px);}
+        .btn-ghost-e{background:rgba(255,255,255,.05);color:#94A3B8;border:1px solid rgba(255,255,255,.1);}
+        .btn-ghost-e:hover{background:rgba(255,255,255,.09);color:#F1F5F9;}
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <div class="err-box">
+        <span class="err-visual">⚙️</span>
+        <div class="err-badge"><i class="fas fa-server"></i>INTERNAL SERVER ERROR</div>
+        <div class="err-code">500</div>
+        <h1 class="err-title">Something broke on our end</h1>
+        <p class="err-desc">Our servers are having trouble. We've been notified and are working on a fix. No action is needed from you.</p>
+
+        <div class="what-to-do">
+            <h4>What you can do</h4>
+            <div class="do-item"><i class="fas fa-sync-alt"></i>Refresh the page and try again</div>
+            <div class="do-item"><i class="fas fa-clock"></i>Check back in a few minutes</div>
+            <div class="do-item"><i class="fas fa-home"></i>Return to the homepage and try a different action</div>
+            <div class="do-item"><i class="fas fa-envelope"></i>Contact support if the problem persists</div>
+        </div>
+
+        <p class="countdown">Auto-refreshing in <span id="counter">30</span> seconds…</p>
+
+        <div class="err-btns">
+            <button onclick="window.location.reload()" class="btn-e btn-amber"><i class="fas fa-sync-alt"></i>Refresh Now</button>
+            <a href="/" class="btn-e btn-ghost-e"><i class="fas fa-home"></i>Go Home</a>
+        </div>
+    </div>
+
+<script>
+let secs = 30;
+const el = document.getElementById('counter');
+const t  = setInterval(() => {
+    secs--;
+    el.textContent = secs;
+    if (secs <= 0) { clearInterval(t); window.location.reload(); }
+}, 1000);
+</script>
+</body>
+</html>

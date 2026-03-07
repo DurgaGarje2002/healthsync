@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Emergency Card Setup — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --bg:#F0F4FF;
+    --surface:#FFFFFF;
+    --border:#E2E8F0;
+    --text:#0F172A;
+    --text-muted:#64748B;
+    --accent:#2563EB;
+    --radius:14px;
+    --risk-high:   linear-gradient(135deg,#DC2626,#B91C1C);
+    --risk-medium: linear-gradient(135deg,#D97706,#B45309);
+    --risk-low:    linear-gradient(135deg,#16A34A,#15803D);
+    --risk-default:linear-gradient(135deg,#2563EB,#1D4ED8);
+    --risk-high-bg:   #DC2626;
+    --risk-medium-bg: #D97706;
+    --risk-low-bg:    #16A34A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+
+/* ── Top Nav ── */
+.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.nav-brand{display:flex;align-items:center;gap:8px;font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:var(--text);}
+.nav-brand span{color:var(--accent);}
+.nav-back{display:flex;align-items:center;gap:7px;color:var(--text-muted);font-size:.85rem;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.nav-back:hover{background:var(--bg);color:var(--text);}
+
+/* ── Page Layout ── */
+.page-wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+.page-header{margin-bottom:28px;}
+.page-title{font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);}
+.page-subtitle{font-size:.85rem;color:var(--text-muted);margin-top:4px;}
+
+.layout{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start;}
+
+/* ── Form Panel ── */
+.form-panel{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;}
+.form-section{padding:20px 24px;border-bottom:1px solid var(--border);}
+.form-section:last-child{border-bottom:none;}
+.section-label{font-size:.7rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.section-label i{color:var(--accent);}
+.form-group{margin-bottom:14px;}
+.form-group:last-child{margin-bottom:0;}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:5px;}
+.form-group label .req{color:#EF4444;margin-left:2px;}
+.hs-input{width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.87rem;font-family:'DM Sans',sans-serif;color:var(--text);background:#FAFBFF;transition:all .2s;outline:none;}
+.hs-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fff;}
+.hs-input::placeholder{color:#94A3B8;}
+select.hs-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.input-hint{font-size:.73rem;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:5px;}
+
+/* ── Risk Selector ── */
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.risk-card{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all .2s;background:#FAFBFF;}
+.risk-card:hover{border-color:#94A3B8;transform:translateY(-1px);}
+.risk-card.active-low   {border-color:#16A34A;background:#F0FDF4;}
+.risk-card.active-medium{border-color:#D97706;background:#FFFBEB;}
+.risk-card.active-high  {border-color:#DC2626;background:#FEF2F2;}
+.risk-icon{font-size:1.5rem;margin-bottom:5px;}
+.risk-name{font-size:.8rem;font-weight:700;}
+.risk-card.active-low   .risk-name{color:#16A34A;}
+.risk-card.active-medium .risk-name{color:#D97706;}
+.risk-card.active-high  .risk-name{color:#DC2626;}
+
+/* ── Actions ── */
+.form-actions{padding:20px 24px;display:flex;gap:10px;justify-content:flex-end;background:#FAFBFF;border-top:1px solid var(--border);}
+.btn-ghost{padding:10px 20px;border:1.5px solid var(--border);border-radius:9px;font-size:.87rem;font-weight:600;font-family:'DM Sans',sans-serif;background:white;color:var(--text-muted);cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:#94A3B8;color:var(--text);}
+.btn-primary{padding:10px 24px;border:none;border-radius:9px;font-size:.87rem;font-weight:700;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:white;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.btn-primary:hover{opacity:.92;transform:translateY(-1px);}
+.btn-download{padding:10px 20px;border:none;border-radius:9px;font-size:.87rem;font-weight:700;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#059669,#047857);color:white;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.btn-download:hover{opacity:.92;transform:translateY(-1px);}
+
+/* ══════════════════════════════
+   EMERGENCY CARD PREVIEW
+   Layout per user sketch:
+   [Full-width risk header]
+   [QR left | Name + Contact right]
+   [Medical details rows]
+   [Footer]
+════════════════════════════════ */
+.card-panel{position:sticky;top:78px;}
+.card-panel-label{font-size:.7rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+
+.ec{background:white;border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #E2E8F0;}
+
+/* Risk Header — full width, risk-colored */
+.ec-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:var(--risk-default);transition:background .3s;}
+.ec-header.HIGH   {background:var(--risk-high);}
+.ec-header.MEDIUM {background:var(--risk-medium);}
+.ec-header.LOW    {background:var(--risk-low);}
+.ec-risk-left{display:flex;align-items:center;gap:10px;}
+.ec-risk-icon{font-size:1.6rem;}
+.ec-risk-label{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.8);}
+.ec-risk-value{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:900;color:white;margin-top:1px;}
+.ec-verified{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 11px;font-size:.67rem;font-weight:700;color:white;letter-spacing:.4px;}
+
+/* Middle: QR left | Patient info right */
+.ec-middle{display:grid;grid-template-columns:130px 1fr;gap:0;border-bottom:1px solid #F1F5F9;}
+.ec-qr-col{padding:16px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F5F9;background:#FAFBFF;}
+.ec-qr-box{width:100px;height:100px;border-radius:10px;overflow:hidden;border:2px solid #E2E8F0;background:#F8FAFC;display:flex;align-items:center;justify-content:center;}
+.ec-qr-box img{width:100%;height:100%;object-fit:contain;}
+.ec-qr-hint{font-size:.6rem;color:#94A3B8;text-align:center;margin-top:7px;line-height:1.3;}
+
+.ec-info-col{padding:14px 16px;display:flex;flex-direction:column;justify-content:center;}
+.ec-patient-name{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:900;color:#0F172A;margin-bottom:4px;}
+.ec-blood-badge{display:inline-flex;align-items:center;gap:4px;background:#FEE2E2;color:#B91C1C;border-radius:20px;padding:2px 9px;font-size:.68rem;font-weight:700;margin-bottom:10px;}
+.ec-contact-box{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:9px;padding:9px 12px;}
+.ec-contact-label{font-size:.63rem;font-weight:700;color:#94A3B8;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+.ec-contact-name{font-size:.88rem;font-weight:700;color:#0F172A;}
+.ec-contact-phone{font-size:.82rem;color:#2563EB;font-weight:600;margin-top:1px;}
+.ec-contact-rel{font-size:.68rem;color:#64748B;margin-top:1px;}
+
+/* Allergy Alert */
+.ec-allergy{margin:10px 14px;padding:9px 12px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:8px;display:none;}
+.ec-allergy.show{display:block;}
+.ec-allergy-label{font-size:.62rem;font-weight:800;color:#DC2626;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+.ec-allergy-val{font-size:.82rem;color:#7F1D1D;font-weight:600;}
+
+/* Medical detail rows */
+.ec-rows{padding:6px 0;}
+.ec-row{display:flex;align-items:flex-start;justify-content:space-between;padding:7px 16px;border-bottom:1px solid #F8FAFC;}
+.ec-row:last-child{border-bottom:none;}
+.ec-row-label{font-size:.68rem;font-weight:700;color:#94A3B8;letter-spacing:.4px;text-transform:uppercase;flex-shrink:0;padding-top:1px;}
+.ec-row-val{font-size:.82rem;font-weight:600;color:#0F172A;text-align:right;max-width:60%;}
+
+/* Footer */
+.ec-footer{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #F1F5F9;background:#FAFBFF;}
+.ec-footer-brand{font-family:'Sora',sans-serif;font-size:.75rem;font-weight:800;color:#0F172A;}
+.ec-footer-brand span{color:#2563EB;}
+.ec-footer-time{font-size:.63rem;color:#94A3B8;}
+
+/* Download button area */
+
+
+/* Toast */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:600;color:white;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .3s ease;}
+.toast-item.success{background:#059669;}
+.toast-item.error{background:#DC2626;}
+.toast-item.info{background:#2563EB;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Loading */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9000;align-items:center;justify-content:center;}
+.ld-pulse{width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+    .layout{grid-template-columns:1fr;}
+    .card-panel{position:static;}
+    .row2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="ld-pulse"></div></div>
+
+<!-- Top Nav -->
+<nav class="topnav">
+    <div class="nav-brand">Health<span>Sync</span></div>
+    <a href="/dashboard" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <h1 class="page-title">Setup Emergency Card</h1>
+        <p class="page-subtitle">Fill in your details — the card preview updates live. Download or save when ready.</p>
+    </div>
+
+    <div class="layout">
+
+        <!-- ══ LEFT: FORM ══ -->
+        <div>
+        <form id="emergencyCardForm" onsubmit="saveCard(event)">
+
+            <!-- Risk Level -->
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-heartbeat"></i> Risk Level <span style="color:#EF4444;margin-left:2px">*</span></div>
+                    <div class="risk-grid">
+                        <div class="risk-card" id="rc-low" onclick="selectRisk('LOW')">
+                            <input type="radio" name="riskLevel" value="LOW" style="display:none">
+                            <div class="risk-icon">✅</div>
+                            <div class="risk-name">LOW</div>
+                            <div style="font-size:.71rem;color:#64748B;margin-top:3px">Stable condition</div>
+                        </div>
+                        <div class="risk-card" id="rc-medium" onclick="selectRisk('MEDIUM')">
+                            <input type="radio" name="riskLevel" value="MEDIUM" style="display:none">
+                            <div class="risk-icon">⚠️</div>
+                            <div class="risk-name">MEDIUM</div>
+                            <div style="font-size:.71rem;color:#64748B;margin-top:3px">Chronic condition</div>
+                        </div>
+                        <div class="risk-card" id="rc-high" onclick="selectRisk('HIGH')">
+                            <input type="radio" name="riskLevel" value="HIGH" style="display:none">
+                            <div class="risk-icon">🚨</div>
+                            <div class="risk-name">HIGH</div>
+                            <div style="font-size:.71rem;color:#64748B;margin-top:3px">Critical / urgent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Info -->
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-stethoscope"></i> Medical Information</div>
+                    <div class="row2">
+                        <div class="form-group">
+                            <label>Current Condition <span class="req">*</span></label>
+                            <input type="text" class="hs-input" id="currentDisease" placeholder="e.g. Diabetes Type 2" required oninput="liveUpdate()">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Type</label>
+                            <select class="hs-input" id="bloodType" onchange="liveUpdate()">
+                                <option value="">— Unknown —</option>
+                                <option>A+</option><option>A-</option>
+                                <option>B+</option><option>B-</option>
+                                <option>AB+</option><option>AB-</option>
+                                <option>O+</option><option>O-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Allergies <span class="req">*</span></label>
+                        <textarea class="hs-input" id="allergies" rows="2" placeholder="e.g. Penicillin, Peanuts, Latex — list ALL known allergies" required oninput="liveUpdate()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Medications</label>
+                        <input type="text" class="hs-input" id="medications" placeholder="e.g. Metformin 500mg, Aspirin 75mg" oninput="liveUpdate()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contacts -->
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-user-friends"></i> Emergency Contact 1 <span class="req">*</span></div>
+                    <div class="row2">
+                        <div class="form-group">
+                            <label>Contact Name <span class="req">*</span></label>
+                            <input type="text" class="hs-input" id="contactName" placeholder="e.g. John Doe" required oninput="liveUpdate()">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number <span class="req">*</span></label>
+                            <input type="tel" class="hs-input" id="emergencyContact" placeholder="+91 98765 43210" required oninput="liveUpdate()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <select class="hs-input" id="relationship" onchange="liveUpdate()">
+                            <option value="">— Select —</option>
+                            <option>Spouse</option><option>Parent</option>
+                            <option>Sibling</option><option>Child</option>
+                            <option>Friend</option><option>Guardian</option><option>Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-user-friends"></i> Emergency Contact 2 <span style="font-size:.75rem;color:#94A3B8">(Optional)</span></div>
+                    <div class="row2">
+                        <div class="form-group">
+                            <label>Contact Name</label>
+                            <input type="text" class="hs-input" id="contact2Name" placeholder="e.g. Jane Doe" oninput="liveUpdate()">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" class="hs-input" id="contact2Phone" placeholder="+91 98765 43210" oninput="liveUpdate()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <select class="hs-input" id="contact2Relationship" onchange="liveUpdate()">
+                            <option value="">— Select —</option>
+                            <option>Spouse</option><option>Parent</option>
+                            <option>Sibling</option><option>Child</option>
+                            <option>Friend</option><option>Guardian</option><option>Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-user-friends"></i> Emergency Contact 3 <span style="font-size:.75rem;color:#94A3B8">(Optional)</span></div>
+                    <div class="row2">
+                        <div class="form-group">
+                            <label>Contact Name</label>
+                            <input type="text" class="hs-input" id="contact3Name" placeholder="e.g. Dr. Smith" oninput="liveUpdate()">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" class="hs-input" id="contact3Phone" placeholder="+91 98765 43210" oninput="liveUpdate()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <select class="hs-input" id="contact3Relationship" onchange="liveUpdate()">
+                            <option value="">— Select —</option>
+                            <option>Spouse</option><option>Parent</option>
+                            <option>Sibling</option><option>Child</option>
+                            <option>Friend</option><option>Guardian</option><option>Doctor</option><option>Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hospital -->
+            <div class="form-panel" style="margin-bottom:16px">
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-hospital"></i> Preferred Hospital</div>
+                    <div class="form-group">
+                        <label>Hospital Name <span class="req">*</span></label>
+                        <input type="text" class="hs-input" id="hospitalName" placeholder="e.g. City General Hospital" required oninput="liveUpdate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Address <span class="req">*</span></label>
+                        <textarea class="hs-input" id="hospitalAddress" rows="2" placeholder="Full address including city and pincode" required oninput="liveUpdate()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Google Maps Link</label>
+                        <input type="url" class="hs-input" id="hospitalMapLink" placeholder="https://maps.app.goo.gl/..." oninput="liveUpdate()">
+                        <div class="input-hint"><i class="fas fa-lightbulb" style="color:#F59E0B"></i> Search on Google Maps → Share → Copy link</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button type="button" class="btn-ghost" onclick="window.location.href='/dashboard'"><i class="fas fa-times me-1"></i> Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Emergency Card</button>
+            </div>
+
+        </form>
+        </div>
+
+        <!-- ══ RIGHT: LIVE CARD PREVIEW ══ -->
+        <div class="card-panel">
+            <div class="card-panel-label"><i class="fas fa-id-card" style="color:var(--accent)"></i> Live Card Preview</div>
+
+            <!-- The actual emergency card (this is what gets downloaded) -->
+            <div class="ec" id="emergencyCard">
+
+                <!-- ① Full-width risk header -->
+                <div class="ec-header DEFAULT" id="ecHeader">
+                    <div class="ec-risk-left">
+                        <span class="ec-risk-icon" id="ecRiskIcon">🏥</span>
+                        <div>
+                            <div class="ec-risk-label">RISK LEVEL</div>
+                            <div class="ec-risk-value" id="ecRiskVal">Not Selected</div>
+                        </div>
+                    </div>
+                    <div class="ec-verified"><i class="fas fa-shield-alt"></i> VERIFIED</div>
+                </div>
+
+                <!-- ② QR left | Patient + contact right -->
+                <div class="ec-middle">
+                    <div class="ec-qr-col">
+                        <div class="ec-qr-box" id="ecQrBox" style="background:#F1F5F9;border:2px dashed #CBD5E1;">
+                            <div style="text-align:center;padding:8px;">
+                                <i class="fas fa-qrcode" style="font-size:1.8rem;color:#CBD5E1;display:block;margin-bottom:4px"></i>
+                                <span style="font-size:.55rem;color:#94A3B8;line-height:1.3;display:block">Save to<br>generate QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ec-info-col">
+                        <div class="ec-patient-name" id="ecName">Your Name</div>
+                        <div class="ec-blood-badge" id="ecBloodBadge" style="display:none">
+                            🩸 <span id="ecBloodVal"></span>
+                        </div>
+                        <div class="ec-contact-box">
+                            <div class="ec-contact-label">Emergency Contact</div>
+                            <div class="ec-contact-name" id="ecContactName">—</div>
+                            <div class="ec-contact-phone" id="ecContactPhone">—</div>
+                            <div class="ec-contact-rel" id="ecContactRel" style="display:none"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ③ Allergy Alert -->
+                <div class="ec-allergy" id="ecAllergy">
+                    <div class="ec-allergy-label">⚠ Allergy Alert</div>
+                    <div class="ec-allergy-val" id="ecAllergyVal"></div>
+                </div>
+
+                <!-- ④ Medical detail rows -->
+                <div class="ec-rows">
+                    <div class="ec-row">
+                        <span class="ec-row-label"><i class="fas fa-stethoscope"></i> Condition</span>
+                        <span class="ec-row-val" id="ecDisease">—</span>
+                    </div>
+                    <div class="ec-row" id="ecMedsRow" style="display:none">
+                        <span class="ec-row-label"><i class="fas fa-pills"></i> Medications</span>
+                        <span class="ec-row-val" id="ecMeds">—</span>
+                    </div>
+                    <div class="ec-row" id="ecHospRow" style="display:none">
+                        <span class="ec-row-label"><i class="fas fa-hospital"></i> Hospital</span>
+                        <span class="ec-row-val" id="ecHosp">—</span>
+                    </div>
+                </div>
+
+                <!-- ⑤ Footer -->
+                <div class="ec-footer">
+                    <div class="ec-footer-brand">Health<span>Sync</span></div>
+                    <div class="ec-footer-time" id="ecTime"></div>
+                </div>
+            </div>
+
+            <p style="font-size:.72rem;color:#94A3B8;text-align:center;margin-top:10px">
+                <i class="fas fa-save" style="color:#2563EB"></i> Save the card to get a downloadable version with QR code
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Download handled on emergency-card-view.html after saving -->
+
+<script>
+// ── Risk palette ──────────────────────────────────
+const RISK = {
+    HIGH:    { icon:'🚨', label:'HIGH RISK',   cls:'HIGH' },
+    MEDIUM:  { icon:'⚠️', label:'MEDIUM RISK', cls:'MEDIUM' },
+    LOW:     { icon:'✅', label:'LOW RISK',    cls:'LOW' },
+};
+let currentRisk = null;
+
+function selectRisk(val) {
+    currentRisk = val;
+    ['LOW','MEDIUM','HIGH'].forEach(r => {
+        document.getElementById('rc-' + r.toLowerCase()).className =
+            'risk-card' + (r === val ? ' active-' + r.toLowerCase() : '');
+        document.querySelector(`input[value="${r}"]`).checked = (r === val);
+    });
+    liveUpdate();
+}
+
+// ── Live Preview ───────────────────────────────────
+function liveUpdate() {
+    const risk     = currentRisk;
+    const rp       = RISK[risk] || null;
+    const name     = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Your Name';
+    const blood    = document.getElementById('bloodType').value;
+    const allergy  = document.getElementById('allergies').value.trim();
+    const disease  = document.getElementById('currentDisease').value.trim();
+    const meds     = document.getElementById('medications').value.trim();
+    const cName    = document.getElementById('contactName').value.trim();
+    const cPhone   = document.getElementById('emergencyContact').value.trim();
+    const cRel     = document.getElementById('relationship').value;
+    const hosp     = document.getElementById('hospitalName').value.trim();
+
+    const hdr = document.getElementById('ecHeader');
+    hdr.className = 'ec-header ' + (rp ? rp.cls : 'DEFAULT');
+    document.getElementById('ecRiskIcon').textContent = rp ? rp.icon : '🏥';
+    document.getElementById('ecRiskVal').textContent  = rp ? rp.label : 'Not Selected';
+
+    document.getElementById('ecName').textContent = name;
+
+    const bloodBadge = document.getElementById('ecBloodBadge');
+    if (blood) {
+        bloodBadge.style.display = 'inline-flex';
+        document.getElementById('ecBloodVal').textContent = blood;
+    } else {
+        bloodBadge.style.display = 'none';
+    }
+
+    document.getElementById('ecContactName').textContent  = cName  || '—';
+    document.getElementById('ecContactPhone').textContent = cPhone || '—';
+
+    const relEl = document.getElementById('ecContactRel');
+    if (cRel) {
+        relEl.style.display = 'block';
+        relEl.textContent = cRel;
+    } else {
+        relEl.style.display = 'none';
+    }
+
+    const allergyEl = document.getElementById('ecAllergy');
+    if (allergy) {
+        allergyEl.classList.add('show');
+        document.getElementById('ecAllergyVal').textContent = allergy;
+    } else {
+        allergyEl.classList.remove('show');
+    }
+
+    document.getElementById('ecDisease').textContent = disease || '—';
+
+    const medsRow = document.getElementById('ecMedsRow');
+    if (meds) {
+        medsRow.style.display = 'flex';
+        document.getElementById('ecMeds').textContent = meds;
+    } else {
+        medsRow.style.display = 'none';
+    }
+
+    const hospRow = document.getElementById('ecHospRow');
+    if (hosp) {
+        hospRow.style.display = 'flex';
+        document.getElementById('ecHosp').textContent = hosp;
+    } else {
+        hospRow.style.display = 'none';
+    }
+
+    document.getElementById('ecTime').textContent =
+        new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// ── Save to Backend ───────────────────────────────
+async function saveCard(e) {
+    e.preventDefault();
+
+    const token  = localStorage.getItem('token')  || sessionStorage.getItem('token');
+    const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+
+    if (!token || !userId) {
+        showToast('Session expired. Please login again.', 'error');
+        return;
+    }
+
+    if (!currentRisk) {
+        showToast('Please select a risk level', 'error');
+        return;
+    }
+
+    const data = {
+        riskLevel: currentRisk,
+        bloodType: document.getElementById('bloodType').value || null,
+        currentDisease: document.getElementById('currentDisease').value,
+        allergies: document.getElementById('allergies').value,
+        medications: document.getElementById('medications').value || null,
+        contactName: document.getElementById('contactName').value || null,
+        relationship: document.getElementById('relationship').value || null,
+        emergencyContact: document.getElementById('emergencyContact').value,
+        contact2Name: document.getElementById('contact2Name').value || null,
+        contact2Relationship: document.getElementById('contact2Relationship').value || null,
+        contact2Phone: document.getElementById('contact2Phone').value || null,
+        contact3Name: document.getElementById('contact3Name').value || null,
+        contact3Relationship: document.getElementById('contact3Relationship').value || null,
+        contact3Phone: document.getElementById('contact3Phone').value || null,
+        hospitalName: document.getElementById('hospitalName').value,
+        hospitalAddress: document.getElementById('hospitalAddress').value,
+        hospitalMapLink: document.getElementById('hospitalMapLink').value || null
+    };
+
+    showLoading();
+
+    try {
+        const res = await fetch('/api/patient-card/user/' + userId, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!res.ok) throw new Error();
+
+		const result = await res.json();
+
+		showToast('Emergency card saved! 🎉', 'success');
+
+		setTimeout(() => {
+		    window.location.href = '/physical-card/' + result.publicId;
+		}, 1500);
+
+    } catch (err) {
+        showToast('Failed to save emergency card', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// ── Utilities ─────────────────────────────────────
+function showLoading() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+function showToast(msg, type = 'info') {
+    const c = document.getElementById('toastContainer');
+    const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle' };
+    const t = document.createElement('div');
+    t.className = 'toast-item ' + type;
+    t.innerHTML = '<i class="fas ' + icons[type] + '"></i><span>' + msg + '</span>';
+    c.appendChild(t);
+    setTimeout(() => {
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 300);
+    }, 4000);
+}
+
+window.addEventListener('DOMContentLoaded', liveUpdate);
+</script>
+</body>
+</html>

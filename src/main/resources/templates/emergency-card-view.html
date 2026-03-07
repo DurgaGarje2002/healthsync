@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Details — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --danger:    #dc2626;
+  --danger-lt: #fef2f2;
+  --warn:      #d97706;
+  --safe:      #059669;
+  --blue:      #2563eb;
+  --blue-lt:   #eff6ff;
+  --ink:       #0f172a;
+  --body:      #334155;
+  --muted:     #64748b;
+  --line:      #e2e8f0;
+  --surface:   #f8fafc;
+  --bg:        #f0f4ff;
+  --white:     #ffffff;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--body);
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ── SOS strip ── */
+.sos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.sos.HIGH   { background: var(--danger); }
+.sos.MEDIUM { background: var(--warn); }
+.sos.LOW    { background: var(--safe); }
+.sos::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(-55deg, transparent, transparent 10px,
+    rgba(255,255,255,.06) 10px, rgba(255,255,255,.06) 20px);
+}
+.blink {
+  width: 8px; height: 8px; border-radius: 50%; background: #fff; flex-shrink: 0;
+  animation: bl 1s infinite;
+}
+@keyframes bl { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ── Nav ── */
+.nav {
+  background: var(--white);
+  border-bottom: 2px solid var(--blue);
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo { font-size: 1rem; font-weight: 800; color: var(--ink); }
+.logo em { color: var(--blue); font-style: normal; }
+.nav-tag {
+  background: var(--blue-lt);
+  border: 1px solid #bfdbfe;
+  color: var(--blue);
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: 28px 20px 22px;
+  color: #fff;
+  position: relative;
+  overflow: visible;
+}
+.hero.HIGH   { background: linear-gradient(135deg,#7f1d1d,#dc2626); }
+.hero.MEDIUM { background: linear-gradient(135deg,#78350f,#d97706); }
+.hero.LOW    { background: linear-gradient(135deg,#14532d,#16a34a); }
+
+/* medical cross */
+.hero-cross {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  opacity: .1; pointer-events: none;
+}
+.hero-cross::before, .hero-cross::after {
+  content: ''; position: absolute; background: #fff; border-radius: 3px;
+}
+.hero-cross::before { width: 20px; height: 64px; left: 22px; top: -8px; }
+.hero-cross::after  { width: 64px; height: 20px; left: -8px; top: 22px; }
+
+.hero-eyebrow {
+  font-size: .58rem; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; opacity: .75; margin-bottom: 8px;
+}
+.hero-name {
+  font-size: 2rem; font-weight: 800; letter-spacing: -.4px;
+  line-height: 1.1; margin-bottom: 14px;
+}
+.hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.htag {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.28);
+  color: #fff;
+  padding: 5px 12px; border-radius: 8px;
+  font-size: .72rem; font-weight: 700;
+}
+.htag-blood { font-family: 'JetBrains Mono', monospace; font-size: .78rem; background: rgba(255,255,255,.28); }
+
+/* ── Allergy ── */
+.allergy {
+  background: #fff5f5;
+  border-top: 3px solid var(--danger);
+  border-bottom: 3px solid var(--danger);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.allergy-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: #fee2e2; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.allergy-head {
+  font-size: .56rem; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--danger); margin-bottom: 3px;
+}
+.allergy-val { font-size: .95rem; font-weight: 700; color: #991b1b; }
+
+/* ── Page wrap ── */
+.wrap { max-width: 640px; margin: 0 auto; padding-bottom: 40px; }
+
+/* ── Section cards ── */
+.scard {
+  background: var(--white);
+  margin: 14px 14px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  box-shadow: 0 2px 10px rgba(37,99,235,.06);
+}
+.scard-head {
+  padding: 11px 18px;
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--line);
+  display: flex; align-items: center; gap: 8px;
+  font-size: .57rem; font-weight: 800;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted);
+}
+.sh-icon {
+  width: 22px; height: 22px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center; font-size: .8rem;
+}
+.si-red  { background: #fee2e2; }
+.si-blue { background: #dbeafe; }
+.si-teal { background: #ccfbf1; }
+
+/* ── Medical grid ── */
+.mgrid { display: grid; grid-template-columns: 1fr 1fr; }
+.mcell {
+  padding: 14px 18px;
+  border-right: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+}
+.mcell:nth-child(even) { border-right: none; }
+.mcell.w2 { grid-column: 1/-1; border-right: none; }
+.mcell:last-child, .mcell:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+.ml {
+  font-size: .54rem; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+}
+.mv { font-size: .9rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.mv-blood {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem; font-weight: 600; color: var(--danger);
+}
+
+/* ── Contacts ── */
+.contact {
+  display: flex; align-items: center; gap: 13px;
+  padding: 14px 18px; border-bottom: 1.5px solid var(--line);
+  transition: background .12s;
+}
+.contact:last-child { border-bottom: none; }
+.contact:hover { background: #f8fafc; }
+
+.av {
+  width: 44px; height: 44px; border-radius: 12px;
+  font-weight: 800; font-size: 1rem; color: #fff;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.av1 { background: linear-gradient(135deg,#1d4ed8,#60a5fa); }
+.av2 { background: linear-gradient(135deg,#7c3aed,#c4b5fd); }
+.av3 { background: linear-gradient(135deg,#0f766e,#34d399); }
+
+.ci { flex: 1; min-width: 0; }
+.cn { font-size: .88rem; font-weight: 700; color: var(--ink); }
+.cr { font-size: .66rem; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+.cp {
+  font-family: 'JetBrains Mono', monospace; font-size: .76rem;
+  color: var(--blue); text-decoration: none; font-weight: 500;
+}
+.cp:hover { text-decoration: underline; }
+
+.call-btn {
+  flex-shrink: 0;
+  background: #dcfce7; color: #15803d;
+  border: 1.5px solid #bbf7d0;
+  padding: 8px 14px; border-radius: 9px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .76rem; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: all .12s;
+}
+.call-btn:hover { background: #bbf7d0; transform: translateY(-1px); }
+
+/* ── Hospital ── */
+.hosp { padding: 16px 18px; }
+.hn { font-size: .95rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.ha { font-size: .8rem; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+.map-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--blue); color: #fff; text-decoration: none;
+  padding: 9px 16px; border-radius: 9px; font-size: .76rem; font-weight: 700;
+  transition: opacity .12s; box-shadow: 0 2px 8px rgba(37,99,235,.25);
+}
+.map-btn:hover { opacity: .88; }
+
+/* ── Footer ── */
+.foot {
+  margin: 14px 14px 0;
+  padding: 14px 18px;
+  background: var(--white);
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  text-align: center;
+  font-size: .63rem; color: var(--muted); font-weight: 500; line-height: 1.9;
+}
+.verified-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #f0fdf4; border: 1.5px solid #bbf7d0; color: var(--safe);
+  font-size: .62rem; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; margin-bottom: 6px;
+}
+.verified-badge::before { content: '✓'; font-size: .8rem; }
+</style>
+</head>
+<body>
+
+<input type="hidden" id="publicIdHolder" th:value="${card.publicId}">
+
+<div class="wrap">
+
+  <div th:class="'sos ' + ${card.riskLevel}">
+    <div class="blink"></div>
+    HealthSync Emergency Alert &nbsp;·&nbsp; Active Scan
+    <div class="blink"></div>
+  </div>
+
+  <div class="nav">
+    <div class="logo">Health<em>Sync</em></div>
+    <div class="nav-tag">Emergency Access</div>
+  </div>
+
+  <div th:class="'hero ' + ${card.riskLevel}">
+    <div class="hero-cross"></div>
+    <div class="hero-eyebrow"><span th:text="${card.riskLevel}">HIGH</span> Risk Patient</div>
+    <div class="hero-name" th:text="${card.user.name}">Patient Name</div>
+    <div class="hero-tags">
+      <span class="htag htag-blood">🩸 <span th:text="${card.bloodType} ?: 'Unknown'"></span></span>
+      <span class="htag" th:if="${card.currentDisease != null}" th:text="${card.currentDisease}"></span>
+    </div>
+  </div>
+
+  <div class="allergy" th:if="${card.allergies != null}">
+    <div class="allergy-icon">⚠️</div>
+    <div>
+      <div class="allergy-head">Severe Allergies — Do Not Administer</div>
+      <div class="allergy-val" th:text="${card.allergies}"></div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head"><div class="sh-icon si-red">🩺</div>Medical Information</div>
+    <div class="mgrid">
+      <div class="mcell">
+        <div class="ml">Blood Type</div>
+        <div class="mv mv-blood" th:text="${card.bloodType} ?: '—'"></div>
+      </div>
+      <div class="mcell">
+        <div class="ml">Risk Level</div>
+        <div class="mv" th:text="${card.riskLevel} ?: '—'"></div>
+      </div>
+      <div class="mcell w2">
+        <div class="ml">Primary Condition</div>
+        <div class="mv" th:text="${card.currentDisease} ?: 'Not specified'"></div>
+      </div>
+      <div class="mcell w2" th:if="${card.medications != null}">
+        <div class="ml">Current Medications</div>
+        <div class="mv" th:text="${card.medications}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head"><div class="sh-icon si-blue">📞</div>Emergency Contacts</div>
+
+    <div class="contact" th:if="${card.emergencyContact != null}">
+      <div class="av av1" th:text="${card.contactName != null ? #strings.substring(card.contactName,0,1) : '1'}">A</div>
+      <div class="ci">
+        <div class="cn" th:text="${card.contactName} ?: 'Contact 1'"></div>
+        <div class="cr" th:text="${card.relationship} ?: ''"></div>
+        <a class="cp" th:href="'tel:' + ${card.emergencyContact}" th:text="${card.emergencyContact}"></a>
+      </div>
+      <a class="call-btn" th:href="'tel:' + ${card.emergencyContact}">📞 Call</a>
+    </div>
+
+    <div class="contact" th:if="${card.contact2Name != null}">
+      <div class="av av2" th:text="${#strings.substring(card.contact2Name,0,1)}">B</div>
+      <div class="ci">
+        <div class="cn" th:text="${card.contact2Name}"></div>
+        <div class="cr" th:text="${card.contact2Relationship} ?: ''"></div>
+        <a class="cp" th:href="'tel:' + ${card.contact2Phone}" th:text="${card.contact2Phone}"></a>
+      </div>
+      <a class="call-btn" th:href="'tel:' + ${card.contact2Phone}">📞 Call</a>
+    </div>
+
+    <div class="contact" th:if="${card.contact3Name != null}">
+      <div class="av av3" th:text="${#strings.substring(card.contact3Name,0,1)}">C</div>
+      <div class="ci">
+        <div class="cn" th:text="${card.contact3Name}"></div>
+        <div class="cr" th:text="${card.contact3Relationship} ?: ''"></div>
+        <a class="cp" th:href="'tel:' + ${card.contact3Phone}" th:text="${card.contact3Phone}"></a>
+      </div>
+      <a class="call-btn" th:href="'tel:' + ${card.contact3Phone}">📞 Call</a>
+    </div>
+  </div>
+
+  <div class="scard" th:if="${card.hospitalName != null}">
+    <div class="scard-head"><div class="sh-icon si-teal">🏥</div>Preferred Hospital</div>
+    <div class="hosp">
+      <div class="hn" th:text="${card.hospitalName}"></div>
+      <div class="ha" th:text="${card.hospitalAddress} ?: ''"></div>
+      <a class="map-btn" th:if="${card.hospitalMapLink != null}"
+         th:href="${card.hospitalMapLink}" target="_blank">🗺 Open in Google Maps</a>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div><span class="verified-badge">HealthSync Verified</span></div>
+    Emergency Access Only<br>
+    <span th:if="${card.lastUpdated != null}">
+      Last updated: <span th:text="${#temporals.format(card.lastUpdated,'dd MMM yyyy, HH:mm')}"></span>
+    </span>
+  </div>
+
+</div>
+
+<!-- Location status banner -->
+<div id="loc-banner" style="
+  display:none; margin:14px 14px 0; padding:11px 16px;
+  border-radius:10px; border:1.5px solid; font-size:.72rem;
+  font-weight:600; line-height:1.5; text-align:center;
+"></div>
+
+<script>
+const publicId = document.getElementById('publicIdHolder').value;
+
+function showBanner(msg, type) {
+  const b = document.getElementById('loc-banner');
+  b.innerHTML = msg;
+  b.style.display     = 'block';
+  b.style.background  = type === 'ok' ? '#f0fdf4' : '#fefce8';
+  b.style.borderColor = type === 'ok' ? '#bbf7d0' : '#fde047';
+  b.style.color       = type === 'ok' ? '#15803d' : '#854d0e';
+}
+
+// Fire ONE scan request with location already included
+function triggerScan(lat, lng, source) {
+  console.log("Firing scan with location (" + (source || "none") + "):", lat, lng);
+  fetch("/api/emergency/scan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ publicId, latitude: lat, longitude: lng })
+  })
+  .then(r => r.text())
+  .then(d => {
+    console.log("Scan API:", d);
+    if (lat && lng) {
+      showBanner("✅ Emergency alert sent with location via " + source + ".", "ok");
+    } else {
+      showBanner("⚠ Alert sent — location could not be retrieved.", "warn");
+    }
+  })
+  .catch(e => console.error("Scan error:", e));
+}
+
+// Get IP location (no browser permission needed)
+function getIpLocation() {
+  return fetch("https://ipapi.co/json/")
+    .then(r => r.json())
+    .then(data => {
+      if (data.latitude && data.longitude) {
+        return { lat: data.latitude, lng: data.longitude, source: "IP (~" + data.city + ")" };
+      }
+      return null;
+    })
+    .catch(() => null);
+}
+
+// Get GPS location wrapped in a Promise with timeout
+function getGpsLocation(timeoutMs) {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) { resolve(null); return; }
+    const timer = setTimeout(() => resolve(null), timeoutMs);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        clearTimeout(timer);
+        resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, source: "GPS" });
+      },
+      () => { clearTimeout(timer); resolve(null); },
+      { timeout: timeoutMs, maximumAge: 0, enableHighAccuracy: false }
+    );
+  });
+}
+
+// Race: try GPS and IP together, use whichever wins, wait max 5s then fire
+(async function() {
+  // Run GPS and IP in parallel, wait max 5 seconds total
+  const result = await Promise.race([
+    // First valid result wins
+    Promise.any([
+      getGpsLocation(4500),
+      getIpLocation()
+    ]).catch(() => null),
+    // Hard deadline — fire after 5s no matter what
+    new Promise(resolve => setTimeout(() => resolve(null), 5000))
+  ]);
+
+  if (result && result.lat && result.lng) {
+    triggerScan(result.lat, result.lng, result.source);
+  } else {
+    triggerScan(null, null, null);
+  }
+})();
+</script>
+
+</body>
+</html>

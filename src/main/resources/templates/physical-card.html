@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Card — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fraunces:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Screen stage — LIGHT ── */
+body {
+  background: linear-gradient(145deg, #e8f0fe 0%, #f0f7ff 50%, #e8f4fd 100%);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 40px 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle dot grid */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(rgba(37,99,235,.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.print-tip {
+  background: #fff8e1;
+  border: 1.5px solid #fde68a;
+  color: #78350f;
+  font-size: .72rem;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 10px;
+  max-width: 380px;
+  text-align: center;
+  line-height: 1.6;
+}
+.tip-icon { margin-right: 4px; }
+
+.screen-label {
+  font-size: .62rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(37,99,235,.45);
+  font-weight: 700;
+}
+
+/* ── Buttons ── */
+.actions { display: flex; gap: 10px; }
+.btn {
+  padding: 10px 22px; border: none; border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  font-size: .8rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+  text-decoration: none; transition: transform .14s, box-shadow .14s;
+  letter-spacing: .2px;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-print { background: #2563eb; color: #fff; box-shadow: 0 4px 16px rgba(37,99,235,.35); }
+.btn-pdf   { background: #059669; color: #fff; box-shadow: 0 4px 16px rgba(5,150,105,.3); }
+
+/* ══════════════════════════
+   WALLET CARD 85.6 × 54 mm
+   ══════════════════════════ */
+.wallet-card {
+  width: 340px;
+  height: 214px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 0 1.5px rgba(37,99,235,.12),
+    0 20px 50px rgba(37,99,235,.15),
+    0 4px 16px rgba(0,0,0,.08);
+  animation: rise .6s .1s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* top colour stripe */
+.stripe {
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb 0%, #7c3aed 50%, #059669 100%);
+  flex-shrink: 0;
+}
+
+/* header */
+.card-header {
+  background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
+  padding: 7px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.brand { font-family: 'Fraunces', serif; font-size: .9rem; color: #fff; font-weight: 700; }
+.brand em { color: #93c5fd; font-style: normal; }
+.brand-sub {
+  font-size: .46rem; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,.45); font-weight: 600;
+}
+
+/* risk strip */
+.risk-strip {
+  padding: 4px 0; text-align: center;
+  font-size: .52rem; font-weight: 800; letter-spacing: 3px;
+  text-transform: uppercase; color: #fff; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.risk-strip::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 5px,
+    rgba(255,255,255,.07) 5px, rgba(255,255,255,.07) 10px);
+}
+.HIGH   { background: linear-gradient(90deg,#9f1239,#e11d48); }
+.MEDIUM { background: linear-gradient(90deg,#92400e,#d97706); }
+.LOW    { background: linear-gradient(90deg,#14532d,#16a34a); }
+
+/* body */
+.card-body {
+  flex: 1; display: flex; gap: 0;
+  padding: 10px 14px; min-height: 0;
+}
+
+/* QR */
+.qr-col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0;
+}
+.qr-frame {
+  width: 76px; height: 76px; border-radius: 10px;
+  border: 1.5px solid #e0eaff; padding: 4px;
+  background: #fff; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(37,99,235,.1);
+}
+.qr-frame img { width: 64px; height: 64px; object-fit: contain; display: block; }
+.qr-hint {
+  font-size: .42rem; letter-spacing: 1px;
+  text-transform: uppercase; color: #94a3b8; text-align: center;
+}
+
+/* divider */
+.vdivider { width: 1px; background: #e2e8f0; margin: 0 12px; flex-shrink: 0; }
+
+/* info */
+.info-col { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+
+.patient-name {
+  font-family: 'Fraunces', serif; font-size: 1.08rem;
+  color: #0f172a; font-weight: 700; line-height: 1.2;
+  margin-bottom: 6px;
+  word-break: break-word; line-height: 1.2;
+}
+.blood-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #fef2f2; border: 1.5px solid #fecaca;
+  color: #be123c; font-size: .6rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 6px; margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.field { margin-bottom: 5px; }
+.fl {
+  font-size: .48rem; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #94a3b8; margin-bottom: 2px;
+}
+.fv { font-size: .72rem; font-weight: 600; color: #1e293b; }
+.fv-phone {
+  font-family: 'JetBrains Mono', monospace; font-size: .66rem;
+  color: #1d4ed8; background: #eff6ff; border: 1.5px solid #bfdbfe;
+  padding: 1px 6px; border-radius: 5px; display: inline-block; margin-top: 1px;
+}
+
+/* footer */
+.card-foot {
+  background: #f0f7ff; border-top: 1.5px solid #dbeafe;
+  padding: 5px 14px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.foot-id {
+  font-family: 'JetBrains Mono', monospace; font-size: .44rem;
+  color: #94a3b8; max-width: 180px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.foot-check { font-size: .5rem; font-weight: 700; color: #059669; white-space: nowrap; }
+.foot-check::before { content: '✓  '; }
+
+/* watermark */
+.wallet-card::before {
+  content: '+'; position: absolute;
+  font-size: 110px; font-weight: 900; color: rgba(37,99,235,.04);
+  right: -10px; bottom: -20px; pointer-events: none; line-height: 1;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════
+   PRINT / PDF — wallet size
+   ══════════════════════════ */
+@media print {
+  @page { size: 85.6mm 54mm; margin: 0; }
+
+  body {
+    background: #fff !important;
+    padding: 0; min-height: auto;
+    display: block; animation: none;
+  }
+  body::before { display: none; }
+  .screen-label, .actions, .print-tip { display: none; }
+
+  .wallet-card {
+    width: 85.6mm; height: 54mm;
+    border-radius: 0; box-shadow: none; animation: none; margin: 0;
+    page-break-inside: avoid;
+  }
+  .wallet-card::before { display: none; }
+
+  /* Force background colours to print */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  .stripe       { height: 2mm; }
+  .card-header  { padding: 2mm 4mm; }
+  .brand        { font-size: 3.5mm; }
+  .brand-sub    { font-size: 1.6mm; }
+  .risk-strip   { font-size: 1.8mm; padding: 1.2mm 0; }
+  .card-body    { padding: 3mm 4mm; }
+  .qr-frame     { width: 22mm; height: 22mm; }
+  .qr-frame img { width: 18mm; height: 18mm; }
+  .qr-hint      { font-size: 1.4mm; }
+  .vdivider     { margin: 0 3mm; }
+  .patient-name { font-size: 4mm; margin-bottom: 1.5mm; word-break: break-word; }
+  .blood-pill   { font-size: 2mm; padding: 0.8mm 2mm; margin-bottom: 2mm; }
+  .fl           { font-size: 1.6mm; }
+  .fv           { font-size: 2.6mm; }
+  .fv-phone     { font-size: 2.2mm; padding: 0.4mm 1.5mm; }
+  .card-foot    { padding: 1.5mm 4mm; }
+  .foot-id      { font-size: 1.4mm; max-width: 50mm; }
+  .foot-check   { font-size: 1.6mm; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen-label">HealthSync &nbsp;·&nbsp; Emergency Medical ID</div>
+
+<div class="actions">
+  <button class="btn btn-print" onclick="window.print()">🖨 Print Card</button>
+  <button class="btn btn-pdf"   onclick="window.print()">⬇ Save as PDF</button>
+</div>
+
+<div class="print-tip">
+  <span class="tip-icon">💡</span>
+  In the print dialog → <strong>More settings</strong> → tick <strong>"Background graphics"</strong> to get full colour in PDF
+</div>
+
+<div class="wallet-card">
+  <div class="stripe"></div>
+
+  <div class="card-header">
+    <div class="brand">Health<em>Sync</em></div>
+    <div class="brand-sub">Medical ID</div>
+  </div>
+
+  <div th:class="'risk-strip ' + (${card} != null ? ${card.riskLevel} : 'LOW')">
+    ⚠ &nbsp;<span th:text="${card != null ? card.riskLevel : 'LOW'}"></span>&nbsp; RISK PATIENT
+  </div>
+
+  <div class="card-body">
+    <div class="qr-col">
+      <div class="qr-frame">
+        <img th:src="@{/qr/{id}(id=${publicId})}" alt="QR">
+      </div>
+      <div class="qr-hint">Scan for details</div>
+    </div>
+
+    <div class="vdivider"></div>
+
+    <div class="info-col">
+      <div class="patient-name" th:text="${card != null ? card.user.name : 'Patient Name'}"></div>
+
+      <div class="blood-pill">
+        🩸 &nbsp;<span th:text="${card != null ? card.bloodType : '—'}"></span>
+      </div>
+
+      <div class="field">
+        <div class="fl">Condition</div>
+        <div class="fv" th:text="${card != null ? card.currentDisease : 'Not provided'}"></div>
+      </div>
+
+      <div class="field">
+        <div class="fl">Emergency Contact</div>
+        <div class="fv-phone" th:text="${card != null ? card.emergencyContact : '—'}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-foot">
+    <div class="foot-id">ID: <span th:text="${publicId}"></span></div>
+    <div class="foot-check">HealthSync Verified</div>
+  </div>
+</div>
+
+</body>
+</html>

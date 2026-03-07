@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:,">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth-shared.css">
+</head>
+<body>
+
+<div class="auth-bg">
+    <div class="auth-bg-blob blob-1"></div>
+    <div class="auth-bg-blob blob-2"></div>
+    <div class="auth-bg-blob blob-3"></div>
+</div>
+
+<a href="/" class="back-btn"><i class="fas fa-arrow-left"></i>Back to Home</a>
+
+<div class="auth-card">
+
+    <a href="/" class="auth-brand">
+        <div class="auth-brand-icon">
+            <svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+        <span class="auth-brand-name">Health<span>Sync</span></span>
+    </a>
+
+    <div class="auth-heading">
+        <h1>Welcome back</h1>
+        <p>Sign in to continue your health journey</p>
+    </div>
+
+    <div id="authAlert" class="auth-alert"></div>
+
+    <form id="loginForm" autocomplete="on">
+
+        <div class="field">
+            <label for="email">Email Address</label>
+            <div class="input-row">
+                <i class="fas fa-envelope fi"></i>
+                <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <div class="input-row">
+                <i class="fas fa-lock fi"></i>
+                <input type="password" id="password" placeholder="Your password" required autocomplete="current-password">
+                <button type="button" class="pw-eye" onclick="togglePw('password',this)"><i class="fas fa-eye"></i></button>
+            </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <label class="check-row" style="margin:0">
+                <input type="checkbox" id="rememberMe">
+                <span>Remember me</span>
+            </label>
+            <div class="forgot-row" style="margin:0">
+                <a href="/forgot-password">Forgot password?</a>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-auth" id="submitBtn">
+            <span id="btnText"><i class="fas fa-sign-in-alt"></i>Sign In</span>
+            <span id="btnLoader" style="display:none"><i class="fas fa-spinner fa-spin"></i>Signing in…</span>
+        </button>
+
+    </form>
+
+    <div class="auth-link-row">
+        Don't have an account? <a href="/register"><i class="fas fa-user-plus me-1"></i>Create one</a>
+    </div>
+
+</div>
+
+<script>
+function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
+
+function showAlert(msg, type) {
+    const el = document.getElementById('authAlert');
+    const icons = { error:'fa-exclamation-circle', success:'fa-check-circle', info:'fa-info-circle' };
+    el.className = `auth-alert ${type} show`;
+    el.innerHTML = `<i class="fas ${icons[type]}"></i>${msg}`;
+    if (type === 'error') setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function setLoading(on) {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = on;
+    document.getElementById('btnText').style.display = on ? 'none' : 'flex';
+    document.getElementById('btnLoader').style.display = on ? 'flex' : 'none';
+}
+
+// Auto-redirect if already logged in
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (token) {
+        const role = localStorage.getItem('role') || sessionStorage.getItem('role');
+        window.location.href = role === 'ROLE_ADMIN' ? '/admin-dashboard' : '/dashboard';
+    }
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const remember = document.getElementById('rememberMe').checked;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('Enter a valid email address','error'); return; }
+    if (password.length < 6) { showAlert('Password must be at least 6 characters','error'); return; }
+
+    setLoading(true);
+    try {
+        const res  = await fetch('/api/auth/login', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Invalid email or password');
+
+        showAlert('Login successful! Redirecting…','success');
+        const store = remember ? localStorage : sessionStorage;
+        store.setItem('token',  data.token);
+        store.setItem('role',   data.role);
+        store.setItem('email',  data.email);
+        store.setItem('userId', data.userId);
+        // Always save a userName — fallback to part before @ in email if name is null
+        var displayName = data.name || data.email.split('@')[0];
+        store.setItem('userName', displayName);
+
+        setTimeout(() => {
+            window.location.href = data.role === 'ROLE_ADMIN' ? '/admin-dashboard' : '/dashboard';
+        }, 900);
+    } catch (err) {
+        showAlert(err.message || 'Something went wrong', 'error');
+        setLoading(false);
+    }
+});
+
+['email','password'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+        document.getElementById('authAlert').classList.remove('show');
+    });
+});
+</script>
+</body>
+</html>

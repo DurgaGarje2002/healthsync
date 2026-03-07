@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--blue:#2563EB;--blue-dk:#1D4ED8;--green:#10B981;--text:#0F172A;--muted:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--card:#FFFFFF;--radius:14px;--tr:.2s ease;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+        .site-nav{position:sticky;top:0;z-index:100;padding:0 max(24px,6vw);height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(248,250,252,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+        .nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+        .nb-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));display:flex;align-items:center;justify-content:center;}
+        .nb-name{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text);}
+        .nb-name span{color:var(--blue);}
+        .btn-nav{padding:8px 18px;border-radius:8px;background:var(--blue);color:white;font-size:.86rem;font-weight:600;text-decoration:none;}
+        .btn-nav:hover{opacity:.9;color:white;}
+
+        .doc-hero{padding:64px max(24px,8vw) 48px;background:linear-gradient(170deg,#EFF6FF,#F8FAFC);border-bottom:1px solid var(--border);}
+        .doc-badge{display:inline-flex;align-items:center;gap:7px;background:#EFF6FF;border:1px solid #BFDBFE;color:var(--blue);padding:5px 14px;border-radius:20px;font-size:.73rem;font-weight:700;letter-spacing:.4px;margin-bottom:18px;}
+        .doc-hero h1{font-family:'Sora',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:10px;}
+        .doc-meta{font-size:.83rem;color:var(--muted);}
+        .doc-meta span{font-weight:600;color:var(--text);}
+
+        /* Two-column layout */
+        .doc-layout{display:grid;grid-template-columns:220px 1fr;gap:48px;padding:56px max(24px,8vw);align-items:start;max-width:1100px;margin:0 auto;}
+
+        /* Sticky TOC */
+        .doc-toc{position:sticky;top:80px;}
+        .toc-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;}
+        .toc-link{display:block;padding:7px 12px;border-left:2px solid var(--border);font-size:.82rem;color:var(--muted);text-decoration:none;transition:all var(--tr);margin-bottom:2px;border-radius:0 6px 6px 0;}
+        .toc-link:hover,.toc-link.active{color:var(--blue);border-left-color:var(--blue);background:#EFF6FF;}
+
+        /* Content */
+        .doc-content section{margin-bottom:52px;scroll-margin-top:88px;}
+        .doc-content section:last-child{margin-bottom:0;}
+        .sec-num{display:inline-block;background:#EFF6FF;color:var(--blue);font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:10px;}
+        .doc-content h2{font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:14px;}
+        .doc-content p{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:12px;}
+        .doc-content p:last-child{margin-bottom:0;}
+        .doc-content ul{list-style:none;padding:0;margin:12px 0;}
+        .doc-content ul li{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:8px;}
+        .doc-content ul li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:8px;}
+
+        .highlight-box{background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid var(--blue);border-radius:var(--radius);padding:18px 20px;margin:16px 0;}
+        .highlight-box.green{background:#F0FDF4;border-color:#A7F3D0;border-left-color:var(--green);}
+        .highlight-box p{margin:0;color:#1E3A8A;font-size:.88rem;}
+        .highlight-box.green p{color:#064E3B;}
+
+        .contact-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-top:16px;}
+        .contact-box p{font-size:.87rem;color:var(--muted);margin-bottom:6px;}
+        .contact-box a{color:var(--blue);text-decoration:none;font-weight:500;}
+        .contact-box a:hover{text-decoration:underline;}
+
+        footer{background:#0F172A;padding:28px max(24px,6vw);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+        footer p{font-size:.8rem;color:#475569;}
+        .footer-links{display:flex;gap:20px;}
+        .footer-links a{font-size:.8rem;color:#475569;text-decoration:none;}
+        .footer-links a:hover{color:#F1F5F9;}
+
+        @media(max-width:768px){.doc-layout{grid-template-columns:1fr;}.doc-toc{display:none;}}
+    </style>
+</head>
+<body>
+
+<nav class="site-nav">
+    <a href="/" class="nav-brand">
+        <div class="nb-icon"><svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+        <span class="nb-name">Health<span>Sync</span></span>
+    </a>
+    <a href="/login" class="btn-nav">Login</a>
+</nav>
+
+<div class="doc-hero">
+    <div class="doc-badge"><i class="fas fa-shield-alt"></i>LEGAL</div>
+    <h1>Privacy Policy</h1>
+    <p class="doc-meta">Last updated: <span>January 1, 2026</span> &nbsp;·&nbsp; Effective: <span>January 1, 2026</span></p>
+</div>
+
+<div class="doc-layout">
+
+    <!-- TOC -->
+    <aside class="doc-toc">
+        <div class="toc-title">On this page</div>
+        <a href="#overview" class="toc-link">1. Overview</a>
+        <a href="#data-we-collect" class="toc-link">2. Data We Collect</a>
+        <a href="#how-we-use" class="toc-link">3. How We Use Data</a>
+        <a href="#data-sharing" class="toc-link">4. Data Sharing</a>
+        <a href="#data-security" class="toc-link">5. Data Security</a>
+        <a href="#your-rights" class="toc-link">6. Your Rights</a>
+        <a href="#cookies" class="toc-link">7. Cookies</a>
+        <a href="#children" class="toc-link">8. Children</a>
+        <a href="#changes" class="toc-link">9. Policy Changes</a>
+        <a href="#contact" class="toc-link">10. Contact Us</a>
+    </aside>
+
+    <!-- Content -->
+    <div class="doc-content">
+
+        <div class="highlight-box green" style="margin-bottom:36px">
+            <p><strong>Our commitment:</strong> HealthSync is a privacy-first platform. We never sell your health data. We never share it with advertisers. Your medical information belongs to you — always.</p>
+        </div>
+
+        <section id="overview">
+            <div class="sec-num">01</div>
+            <h2>Overview</h2>
+            <p>HealthSync Technologies Pvt. Ltd. ("HealthSync", "we", "us", or "our") operates the HealthSync health tracking platform accessible at healthsync.in and related mobile applications.</p>
+            <p>This Privacy Policy explains how we collect, use, store, and protect your personal and health information when you use our services. By using HealthSync, you agree to the practices described in this policy.</p>
+        </section>
+
+        <section id="data-we-collect">
+            <div class="sec-num">02</div>
+            <h2>Data We Collect</h2>
+            <p>We collect information you provide directly and information generated as you use our services.</p>
+            <p><strong>Account Information:</strong></p>
+            <ul>
+                <li>Full name and email address</li>
+                <li>Password (stored as a one-way hash — we cannot read it)</li>
+                <li>Optional: phone number, date of birth, gender</li>
+            </ul>
+            <p><strong>Health Information:</strong></p>
+            <ul>
+                <li>Health metrics you log: weight, blood pressure, blood sugar levels</li>
+                <li>Emergency card data: medical conditions, allergies, medications, emergency contacts, preferred hospital</li>
+                <li>Documents and medical reports you upload</li>
+                <li>Risk level classification you self-assign</li>
+            </ul>
+            <p><strong>Usage Data:</strong></p>
+            <ul>
+                <li>Log data: IP address, browser type, pages visited, timestamps</li>
+                <li>Device information: operating system, screen resolution</li>
+            </ul>
+        </section>
+
+        <section id="how-we-use">
+            <div class="sec-num">03</div>
+            <h2>How We Use Your Data</h2>
+            <p>We use the information we collect to:</p>
+            <ul>
+                <li>Provide and maintain the HealthSync platform and all its features</li>
+                <li>Generate your emergency QR card and make it accessible to medical responders when scanned</li>
+                <li>Send account-related notifications (password resets, security alerts)</li>
+                <li>Improve the platform based on aggregate usage patterns</li>
+                <li>Provide customer support when you contact us</li>
+                <li>Comply with legal obligations</li>
+            </ul>
+            <div class="highlight-box">
+                <p>We do <strong>not</strong> use your health data to train AI models, serve advertisements, or create marketing profiles about you.</p>
+            </div>
+        </section>
+
+        <section id="data-sharing">
+            <div class="sec-num">04</div>
+            <h2>Data Sharing</h2>
+            <p>We do not sell, rent, or trade your personal or health information to any third party.</p>
+            <p>The only circumstance in which your data is shared with anyone is:</p>
+            <ul>
+                <li><strong>Your Emergency Card:</strong> When a medical responder scans your QR code, they can view your emergency card information (conditions, allergies, emergency contact, hospital). This is the core purpose of the feature and happens only when your QR code is physically scanned.</li>
+                <li><strong>Legal Requirements:</strong> We may disclose information if required by law, court order, or government authority.</li>
+                <li><strong>Service Providers:</strong> We use trusted third-party infrastructure providers (cloud hosting, email delivery) under strict data processing agreements. They cannot use your data for their own purposes.</li>
+            </ul>
+        </section>
+
+        <section id="data-security">
+            <div class="sec-num">05</div>
+            <h2>Data Security</h2>
+            <p>We take the security of your health data seriously and implement industry-standard protections:</p>
+            <ul>
+                <li>JWT (JSON Web Token) authentication for all API requests</li>
+                <li>Passwords hashed using BCrypt — we cannot view your password</li>
+                <li>HTTPS/TLS encryption for all data in transit</li>
+                <li>Encrypted storage for sensitive health data at rest</li>
+                <li>Regular security audits and vulnerability assessments</li>
+            </ul>
+            <p>No system is 100% secure. If you discover a security vulnerability, please contact us immediately at support@healthsync.com.</p>
+        </section>
+
+        <section id="your-rights">
+            <div class="sec-num">06</div>
+            <h2>Your Rights</h2>
+            <p>You have full control over your data at all times:</p>
+            <ul>
+                <li><strong>Access:</strong> View all your stored health data from your dashboard at any time</li>
+                <li><strong>Correction:</strong> Update or correct any inaccurate information from your profile or health records</li>
+                <li><strong>Export:</strong> Download a copy of your health records as a PDF report</li>
+                <li><strong>Deletion:</strong> Permanently delete your account and all associated data from Profile Settings → Danger Zone</li>
+                <li><strong>Opt-out:</strong> Manage notification preferences from your Profile Settings at any time</li>
+            </ul>
+            <p>Account deletions are permanent and irreversible. All data is removed within 30 days of deletion.</p>
+        </section>
+
+        <section id="cookies">
+            <div class="sec-num">07</div>
+            <h2>Cookies</h2>
+            <p>HealthSync uses minimal cookies and local/session storage for essential functionality only:</p>
+            <ul>
+                <li><strong>Authentication tokens:</strong> Stored in localStorage or sessionStorage to keep you logged in</li>
+                <li><strong>User preferences:</strong> Such as notification settings, stored locally on your device</li>
+            </ul>
+            <p>We do not use tracking cookies, advertising cookies, or third-party analytics cookies.</p>
+        </section>
+
+        <section id="children">
+            <div class="sec-num">08</div>
+            <h2>Children's Privacy</h2>
+            <p>HealthSync is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us and we will delete it immediately.</p>
+        </section>
+
+        <section id="changes">
+            <div class="sec-num">09</div>
+            <h2>Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. When we make significant changes, we will notify you by email and display a prominent notice within the platform for at least 30 days before the changes take effect.</p>
+            <p>Continued use of HealthSync after the effective date of changes constitutes acceptance of the updated policy.</p>
+        </section>
+
+        <section id="contact">
+            <div class="sec-num">10</div>
+            <h2>Contact Us</h2>
+            <p>If you have any questions, concerns, or requests related to this Privacy Policy or your data, please reach out:</p>
+            <div class="contact-box">
+                <p><strong>HealthSync Technologies Pvt. Ltd.</strong></p>
+                <p>Privacy Team: support@healthsync.com</p>
+                <p>Support: support@healthsync.com</p>
+                <p>Address: Pune, Maharashtra, India — 411001</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 HealthSync · All rights reserved</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+    </div>
+</footer>
+
+<script>
+// Highlight active TOC link on scroll
+const sections = document.querySelector('[id]');
+const toc = document.querySelectorAll('.toc-link');
+const io = new IntersectionObserver(e => {
+    e.forEach(en => {
+        if (en.isIntersecting) {
+            toc.forEach(l => l.classList.remove('active'));
+            const link = document.querySelector(`.toc-link[href="#${en.target.id}"]`);
+            if (link) link.classList.add('active');
+        }
+    });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>

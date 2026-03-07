@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — HealthSync</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="icon" href="data:,">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+<!-- Toast Notification -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-core">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring delay-1"></div>
+        <svg class="heart-loader" viewBox="0 0 24 24" fill="white" width="28" height="28">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="brand">
+            <div class="brand-icon" style="background:transparent;padding:0">
+                <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">HealthSync</span>
+                <span class="brand-sub">Patient Portal</span>
+            </div>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="user-avatar-lg" id="userAvatarSidebar">U</div>
+        <div class="user-details">
+            <div class="user-name-sb" id="userNameSidebar">—</div>
+            <div class="user-email-sb" id="userEmailSidebar">—</div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="overview">
+            <i class="fas fa-th-large"></i>
+            <span>Overview</span>
+        </a>
+        <a href="#" class="nav-item" data-section="records">
+            <i class="fas fa-file-medical-alt"></i>
+            <span>Health Records</span>
+            <span class="nav-badge" id="recordBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-section="documents">
+            <i class="fas fa-folder-open"></i>
+            <span>Documents</span>
+        </a>
+        <a href="#" class="nav-item" data-section="appointments">
+            <i class="fas fa-calendar-check"></i>
+            <span>Appointments</span>
+        </a>
+        <a href="#" class="nav-item" data-section="add-record">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Record</span>
+        </a>
+        <a href="/reminders" class="nav-item">
+            <i class="fas fa-bell"></i><span>Reminders</span>
+        </a>
+        <a href="/health-report" class="nav-item">
+            <i class="fas fa-file-medical"></i><span>Health Report</span>
+        </a>
+        <a href="/feedback" class="nav-item">
+            <i class="fas fa-comment-dots"></i><span>Feedback</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="/profile" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>My Profile</span>
+        </a>
+        <a href="/emergency-card-setup" class="nav-item">
+            <i class="fas fa-id-card"></i>
+            <span>Setup Card</span>
+        </a>
+        <a href="#" class="nav-item emergency-btn" onclick="openEmergencyCard()">
+            <i class="fas fa-qrcode"></i>
+            <span>View QR Card</span>
+            <span class="emergency-dot"></span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="btn-logout-sb" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="main-wrapper" id="mainWrapper">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-title">
+                <h1 id="pageTitle">Overview</h1>
+                <p id="pageDate" class="page-subtitle"></p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="topbar-btn" onclick="openEmergencyCard()" title="Emergency Card">
+                <i class="fas fa-qrcode"></i>
+                <span class="btn-label">Emergency Card</span>
+            </button>
+
+            <!-- 🔔 Bell Button + Dropdown -->
+            <div class="notif-wrap" id="notifWrap">
+                <div class="notif-btn" id="notifBtn" onclick="toggleNotifDropdown(event)" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-dot" id="notifDot"></span>
+                </div>
+                <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notif-header">
+                        <span>Notifications</span>
+                        <button class="notif-clear-btn" onclick="clearAllNotifications()">Clear all</button>
+                    </div>
+                    <div class="notif-list" id="notifList">
+                        <!-- populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 👤 Avatar Button + Dropdown -->
+            <div class="avatar-wrap" id="avatarWrap">
+                <div class="topbar-avatar" id="topbarAvatar" onclick="toggleAvatarDropdown(event)" title="Account">U</div>
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="av-user-info">
+                        <div class="av-avatar" id="avDropAvatar">U</div>
+                        <div>
+                            <div class="av-name" id="avDropName">User</div>
+                            <div class="av-email" id="avDropEmail">—</div>
+                        </div>
+                    </div>
+                    <div class="av-divider"></div>
+                    <a href="/profile" class="av-item"><i class="fas fa-user-circle"></i>My Profile</a>
+                    <a href="/emergency-card-setup" class="av-item"><i class="fas fa-id-card"></i>Emergency Card</a>
+                    <div class="av-item" onclick="switchSection('records')"><i class="fas fa-clipboard-list"></i>Health Records</div>
+                    <div id="avAdminLink" style="display:none">
+                        <div class="av-divider"></div>
+                        <a href="/admin-dashboard" class="av-item" style="color:#FCD34D"><i class="fas fa-shield-alt"></i>Admin Panel</a>
+                    </div>
+                    <div class="av-divider"></div>
+                    <div class="av-item av-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====== SECTION: OVERVIEW ====== -->
+    <section class="content-section active" id="section-overview">
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="welcome-text">
+                <p class="welcome-label">Good day,</p>
+                <h2 id="welcomeName">Welcome back!</h2>
+                <p class="welcome-sub">Here's a summary of your health activity</p>
+            </div>
+            <div class="welcome-visual">
+                <div class="health-circle">
+                    <svg viewBox="0 0 100 100" class="circle-svg">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="6"/>
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="6"
+                                stroke-dasharray="283" stroke-dashoffset="70" stroke-linecap="round"
+                                class="circle-progress" id="healthScoreCircle"/>
+                    </svg>
+                    <div class="circle-inner">
+                        <span class="circle-value" id="healthScore">75</span>
+                        <span class="circle-label">Health Score</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" data-color="blue">
+                <div class="stat-header">
+                    <div class="stat-icon-wrap blue">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span class="stat-trend up"><i class="fas fa-arrow-up"></i></span>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-value" id="totalRecords">0</div>
+                    <div class="stat-label">Total Records</div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill blue" style="width: 60%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card" data-color="green">
+                <div class="stat-header">
+                    <div class="stat-icon-wrap green">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <span class="stat-unit">kg</span>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-value" id="latestWeight">--</div>
+                    <div class="stat-label">Current Weight</div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill green" style="width: 45%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card" data-color="red">
+                <div class="stat-header">
+                    <div class="stat-icon-wrap red">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <span class="stat-unit">mmHg</span>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-value" id="latestBP">--</div>
+                    <div class="stat-label">Blood Pressure</div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill red" style="width: 72%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card" data-color="purple">
+                <div class="stat-header">
+                    <div class="stat-icon-wrap purple">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <span class="stat-unit">mg/dL</span>
+                </div>
+                <div class="stat-body">
+                    <div class="stat-value" id="latestSugar">--</div>
+                    <div class="stat-label">Sugar Level</div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill purple" style="width: 55%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Trend Chart -->
+        <div class="panel" style="margin-bottom:24px">
+            <div class="panel-head">
+                <h3><i class="fas fa-chart-line me-2" style="color:var(--accent-blue)"></i>Health Trends</h3>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <select id="chartMetric" class="filter-select" style="padding:4px 10px;font-size:0.8rem" onchange="updateChart()">
+                        <option value="weight">Weight (kg)</option>
+                        <option value="sugar">Sugar Level</option>
+                    </select>
+                    <button class="see-all" onclick="switchSection('records')">All Records</button>
+                </div>
+            </div>
+            <div style="padding:16px 16px 8px;position:relative;height:200px">
+                <canvas id="healthChart"></canvas>
+                <div id="chartEmpty" style="display:none;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-secondary)">
+                    <i class="fas fa-chart-line" style="font-size:2rem;opacity:0.3;margin-bottom:8px"></i>
+                    <p style="font-size:0.85rem">Add health records to see your trend</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions + Recent Activity Row -->
+        <div class="two-col-grid">
+            <!-- Quick Actions -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <button class="qa-btn" onclick="switchSection('add-record')">
+                        <div class="qa-icon blue"><i class="fas fa-plus"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Add Record</span>
+                            <span class="qa-sub">Log new vitals</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </button>
+                    <button class="qa-btn" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <div class="qa-icon green"><i class="fas fa-upload"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Upload Document</span>
+                            <span class="qa-sub">X-Ray, Reports, Labs</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </button>
+                    <button class="qa-btn" onclick="openEmergencyCard()">
+                        <div class="qa-icon red"><i class="fas fa-qrcode"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Emergency Card</span>
+                            <span class="qa-sub">View & share QR code</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </button>
+                    <a href="/profile" class="qa-btn">
+                        <div class="qa-icon purple"><i class="fas fa-user-edit"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Edit Profile</span>
+                            <span class="qa-sub">Update your details</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </a>
+                    <a href="/reminders" class="qa-btn">
+                        <div class="qa-icon orange"><i class="fas fa-bell"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Reminders</span>
+                            <span class="qa-sub">Manage your alerts</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </a>
+                    <a href="/health-report" class="qa-btn">
+                        <div class="qa-icon teal"><i class="fas fa-file-medical"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Health Report</span>
+                            <span class="qa-sub">Download PDF report</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </a>
+                    <a href="/feedback" class="qa-btn">
+                        <div class="qa-icon pink"><i class="fas fa-comment-dots"></i></div>
+                        <div class="qa-text">
+                            <span class="qa-title">Feedback</span>
+                            <span class="qa-sub">Share your thoughts</span>
+                        </div>
+                        <i class="fas fa-chevron-right qa-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Records -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h3>Recent Activity</h3>
+                    <button class="see-all" onclick="switchSection('records')">See all</button>
+                </div>
+                <div id="recentActivity" class="recent-list">
+                    <div class="empty-mini">
+                        <i class="fas fa-heartbeat"></i>
+                        <p>No records yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ====== SECTION: HEALTH RECORDS ====== -->
+    <section class="content-section" id="section-records">
+        <div class="panel">
+            <div class="panel-head">
+                <h3><i class="fas fa-file-medical-alt me-2" style="color:var(--accent-blue)"></i>Health Records</h3>
+                <span class="count-badge" id="recordCount">0 records</span>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchRecords" placeholder="Search records..." onkeyup="filterRecords()">
+                </div>
+                <select class="filter-select" id="filterType" onchange="filterRecords()">
+                    <option value="">All Types</option>
+                    <option value="General">General Checkup</option>
+                    <option value="Diabetes">Diabetes</option>
+                    <option value="Heart">Heart Health</option>
+                    <option value="Fitness">Fitness</option>
+                </select>
+            </div>
+
+            <div class="table-wrap">
+                <table class="hs-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight</th>
+                            <th>Blood Pressure</th>
+                            <th>Sugar Level</th>
+                            <th>Type</th>
+                            <th>Notes</th>
+                            <th style="text-align:center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-cell">
+                                <div class="empty-state-tbl">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <p>No records found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SECTION: DOCUMENTS ====== -->
+    <section class="content-section" id="section-documents">
+        <div class="panel">
+            <div class="panel-head">
+                <h3><i class="fas fa-folder-open me-2" style="color:var(--accent-green)"></i>Medical Documents</h3>
+                <button class="btn-primary-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    <i class="fas fa-upload me-1"></i>Upload
+                </button>
+            </div>
+            <div class="docs-grid" id="documentsGrid">
+                <div class="empty-docs-state">
+                    <div class="empty-icon-wrap">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h4>No documents yet</h4>
+                    <p>Upload X-rays, prescriptions, lab results and more</p>
+                    <button class="btn-primary-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-plus me-1"></i>Upload First Document
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SECTION: ADD RECORD ====== -->
+    <section class="content-section" id="section-add-record">
+        <div class="panel form-panel">
+            <div class="panel-head">
+                <h3><i class="fas fa-plus-circle me-2" style="color:var(--accent-green)"></i>Add Health Record</h3>
+            </div>
+
+            <form id="recordForm" onsubmit="addHealthRecord(event)">
+                <div class="form-section-label">Basic Info</div>
+                <div class="form-row-grid">
+                    <div class="field-group">
+                        <label>Date <span class="required">*</span></label>
+                        <div class="input-wrap">
+                            <i class="fas fa-calendar-alt input-icon"></i>
+                            <input type="date" id="date" required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Record Type</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-tag input-icon"></i>
+                            <select id="type">
+                                <option value="General">General Checkup</option>
+                                <option value="Diabetes">Diabetes Monitoring</option>
+                                <option value="Heart">Heart Health</option>
+                                <option value="Fitness">Fitness Tracking</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-label">Vitals</div>
+                <div class="form-row-grid three-col">
+                    <div class="field-group">
+                        <label>Weight (kg)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-weight input-icon"></i>
+                            <input type="number" id="weight" placeholder="e.g. 70.5" step="0.1" min="0">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Blood Pressure</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-heartbeat input-icon"></i>
+                            <input type="text" id="bp" placeholder="e.g. 120/80" pattern="[0-9]{2,3}/[0-9]{2,3}">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Sugar Level (mg/dL)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-tint input-icon"></i>
+                            <input type="number" id="sugar" placeholder="e.g. 95" step="0.1" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-label">Additional Info</div>
+                <div class="field-group">
+                    <label>Notes (Optional)</label>
+                    <div class="input-wrap textarea-wrap">
+                        <i class="fas fa-sticky-note input-icon"></i>
+                        <textarea id="notes" placeholder="Any observations, symptoms, or notes..." rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn-ghost">
+                        <i class="fas fa-undo me-2"></i>Clear
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-plus me-2"></i>Save Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- ====== SECTION: APPOINTMENTS ====== -->
+    <section class="content-section" id="section-appointments">
+        <div class="panel">
+            <div class="panel-head">
+                <h3><i class="fas fa-calendar-check me-2" style="color:var(--accent-blue)"></i>Appointments</h3>
+                <button class="btn-submit" onclick="openBookModal()"><i class="fas fa-plus me-2"></i>Book Appointment</button>
+            </div>
+
+            <div class="table-wrap" style="margin-top:16px">
+                <table class="hs-table">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Doctor / Clinic</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th style="text-align:center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-cell">
+                                <div class="empty-state-tbl">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>No appointments yet. Book your first one!</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Book Appointment Modal ===== -->
+    <div class="modal fade" id="bookApptModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content hs-modal">
+                <div class="hs-modal-header">
+                    <h5>Book Appointment</h5>
+                    <button type="button" class="hs-close" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="hs-modal-body">
+                    <form id="bookApptForm" onsubmit="submitAppointment(event)">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="hs-input" id="apptDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Time</label>
+                                <input type="time" class="hs-input" id="apptTime" required>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Doctor / Clinic Name</label>
+                            <input type="text" class="hs-input" id="apptDoctor" placeholder="e.g. Dr. Sharma, City Hospital" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="form-label">Reason for Visit</label>
+                            <textarea class="hs-input" id="apptReason" rows="2" placeholder="e.g. Routine checkup, Diabetes follow-up..." required></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-submit"><i class="fas fa-calendar-check me-2"></i>Book</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Edit Health Record Modal ===== -->
+    <div class="modal fade" id="editRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content hs-modal">
+                <div class="hs-modal-header">
+                    <h5>Edit Health Record</h5>
+                    <button type="button" class="hs-close" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="hs-modal-body">
+                    <form id="editRecordForm" onsubmit="saveEditRecord(event)">
+                        <input type="hidden" id="editRecordId">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="hs-input" id="editDate" required>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" step="0.1" class="hs-input" id="editWeight" placeholder="e.g. 70.5">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Blood Pressure</label>
+                                <input type="text" class="hs-input" id="editBP" placeholder="e.g. 120/80">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Sugar Level (mg/dL)</label>
+                                <input type="number" step="0.1" class="hs-input" id="editSugar" placeholder="e.g. 95">
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="hs-input" id="editType">
+                                <option value="General">General Checkup</option>
+                                <option value="Diabetes">Diabetes</option>
+                                <option value="Heart">Heart Health</option>
+                                <option value="Fitness">Fitness</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="form-label">Notes</label>
+                            <textarea class="hs-input" id="editNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-submit"><i class="fas fa-save me-2"></i>Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End Main Wrapper -->
+
+<!-- ===== Upload Modal ===== -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content hs-modal">
+            <div class="hs-modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon-badge"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div>
+                        <h5>Upload Medical Document</h5>
+                        <p>Supported: JPG, PNG, PDF (Max 5MB)</p>
+                    </div>
+                </div>
+                <button type="button" class="hs-close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="hs-modal-body">
+                <form id="uploadForm" onsubmit="uploadDocument(event)">
+                    <div class="upload-zone" id="uploadArea">
+                        <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf" required onchange="handleFileSelect(event)">
+                        <div class="upload-zone-inner" id="uploadZoneInner">
+                            <div class="upload-zone-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h6>Drag & Drop your file here</h6>
+                            <p>or <span class="click-link" onclick="document.getElementById('fileInput').click()">browse files</span></p>
+                        </div>
+                    </div>
+
+                    <div id="selectedFileInfo" style="display:none" class="selected-file-info">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="selectedFileName"></span>
+                        <button type="button" class="remove-file" onclick="clearFile()"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <div class="form-row-grid">
+                        <div class="field-group">
+                            <label>Document Type <span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-tag input-icon"></i>
+                                <select id="docType" required>
+                                    <option value="">Select type...</option>
+                                    <option value="X-Ray">X-Ray</option>
+                                    <option value="Report">Medical Report</option>
+                                    <option value="Prescription">Prescription</option>
+                                    <option value="Lab">Lab Results</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label>Document Date <span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-calendar-alt input-icon"></i>
+                                <input type="date" id="docDate" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Document Name <span class="required">*</span></label>
+                        <div class="input-wrap">
+                            <i class="fas fa-file-alt input-icon"></i>
+                            <input type="text" id="docName" placeholder="e.g. Chest X-Ray — Jan 2026" required>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Notes (Optional)</label>
+                        <div class="input-wrap textarea-wrap">
+                            <i class="fas fa-sticky-note input-icon"></i>
+                            <textarea id="docNotes" rows="2" placeholder="Additional notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div id="uploadProgress" style="display:none" class="upload-progress-wrap">
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+                        </div>
+                        <span class="progress-label">Uploading...</span>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-submit" id="uploadBtn">
+                            <i class="fas fa-upload me-2"></i>Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== View Document Modal ===== -->
+<div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content hs-modal">
+            <div class="hs-modal-header">
+                <h5 id="viewModalLabel">Document Preview</h5>
+                <button type="button" class="hs-close" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="hs-modal-body">
+                <div id="documentViewer"></div>
+                <div class="modal-actions mt-3">
+                    <button class="btn-ghost" data-bs-dismiss="modal">Close</button>
+                    <a id="downloadLink" class="btn-submit" download>
+                        <i class="fas fa-download me-2"></i>Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/dashboard.js"></script>
+
+<!-- Inline dropdown JS -->
+<script>
+// ── Bell Notification Dropdown ────────────────────────────────
+const DEFAULT_NOTIFS = [
+    { icon:'fa-heartbeat', cls:'ni-blue',   text:'Welcome to HealthSync! Add your first health record.',           time:'Just now' },
+    { icon:'fa-id-card',   cls:'ni-green',  text:'Set up your Emergency Card for faster emergency response.',     time:'2 min ago' },
+    { icon:'fa-shield-alt',cls:'ni-yellow', text:'Keep your profile updated for accurate health tracking.',       time:'1 hr ago' },
+];
+
+function loadNotifications() {
+    const list = JSON.parse(localStorage.getItem('hs_notifications') || 'null') || DEFAULT_NOTIFS;
+    renderNotifications(list);
+}
+
+function renderNotifications(list) {
+    const el  = document.getElementById('notifList');
+    const dot = document.getElementById('notifDot');
+    if (!el) return;
+    if (!list.length) {
+        el.innerHTML = '<div class="notif-empty"><i class="fas fa-bell-slash"></i>No notifications</div>';
+        if (dot) dot.style.display = 'none';
+        return;
+    }
+    if (dot) dot.style.display = 'block';
+    el.innerHTML = list.map(n => `
+        <div class="notif-item">
+            <div class="notif-icon ${n.cls}"><i class="fas ${n.icon}"></i></div>
+            <div>
+                <div class="notif-text">${n.text}</div>
+                <div class="notif-time">${n.time}</div>
+            </div>
+        </div>`).join('');
+}
+
+function clearAllNotifications() {
+    localStorage.setItem('hs_notifications', '[]');
+    renderNotifications([]);
+}
+
+function toggleNotifDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('avatarDropdown')?.classList.remove('open');
+    document.getElementById('notifDropdown')?.classList.toggle('open');
+}
+
+// ── Avatar Dropdown ───────────────────────────────────────────
+function setupAvatarDropdown() {
+    const name     = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'User';
+    const email    = localStorage.getItem('email')    || sessionStorage.getItem('email')    || '';
+    const role     = localStorage.getItem('role')     || sessionStorage.getItem('role')     || '';
+    const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) || 'U';
+    const avName   = document.getElementById('avDropName');
+    const avEmail  = document.getElementById('avDropEmail');
+    const avAvatar = document.getElementById('avDropAvatar');
+    if (avName)   avName.textContent   = name;
+    if (avEmail)  avEmail.textContent  = email;
+    if (avAvatar) avAvatar.textContent = initials;
+    if (role === 'ROLE_ADMIN') {
+        const al = document.getElementById('avAdminLink');
+        if (al) al.style.display = 'block';
+    }
+}
+
+function toggleAvatarDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('notifDropdown')?.classList.remove('open');
+    document.getElementById('avatarDropdown')?.classList.toggle('open');
+}
+
+// Close both dropdowns on outside click
+document.addEventListener('click', function(e) {
+    if (!document.getElementById('notifWrap')?.contains(e.target))
+        document.getElementById('notifDropdown')?.classList.remove('open');
+    if (!document.getElementById('avatarWrap')?.contains(e.target))
+        document.getElementById('avatarDropdown')?.classList.remove('open');
+});
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    loadNotifications();
+    setupAvatarDropdown();
+});
+</script>
+
+<!-- ── Emergency Card: fetch publicId then open in new tab ── -->
+<script>
+async function openEmergencyCard() {
+    const token  = localStorage.getItem('token')  || sessionStorage.getItem('token');
+    const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+
+    if (!token || !userId) {
+        window.location.href = '/login';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/patient-card/user/${userId}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (!res.ok) {
+            // Card not set up yet — redirect to setup page
+            window.location.href = '/emergency-card-setup';
+            return;
+        }
+
+        const card = await res.json();
+
+        if (card.publicId) {
+            window.open(`/physical-card/${card.publicId}`, '_blank');
+        } else {
+            window.location.href = '/emergency-card-setup';
+        }
+    } catch (err) {
+        console.error('Failed to fetch card:', err);
+        window.location.href = '/emergency-card-setup';
+    }
+}
+</script>
+
+</body>
+</html>

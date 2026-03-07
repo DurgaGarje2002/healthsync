@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Health Report — HealthSync</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#F0F4FF;--surface:#fff;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--accent:#2563EB;--r:14px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+.topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.brand{font-family:"Sora",sans-serif;font-size:1rem;font-weight:800;}.brand span{color:var(--accent);}
+.nav-back{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.85rem;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.nav-back:hover{background:var(--bg);}
+.wrap{max-width:800px;margin:0 auto;padding:36px 20px 60px;}
+h1{font-family:"Sora",sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+.sub{font-size:.87rem;color:var(--muted);margin-bottom:28px;}
+.action-bar{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.btn-action{padding:11px 20px;border:none;border-radius:10px;font-size:.87rem;font-weight:700;font-family:"DM Sans",sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;}
+.btn-pdf{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;}
+.btn-print{background:rgba(15,23,42,.08);color:var(--text);border:1px solid var(--border);}
+.btn-action:hover{opacity:.9;transform:translateY(-1px);}
+.report{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:0 2px 16px rgba(0,0,0,.06);overflow:hidden;}
+.report-header{background:linear-gradient(135deg,#2563EB,#1D4ED8);padding:28px 32px;color:#fff;}
+.report-title{font-family:"Sora",sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:4px;}
+.report-meta{font-size:.82rem;opacity:.8;}
+.report-body{padding:28px 32px;}
+.section{margin-bottom:28px;}
+.section-title{font-size:.7rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:7px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;}
+.section-title i{color:var(--accent);}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:4px;}
+.stat-card{background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:16px;}
+.stat-label{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.stat-value{font-family:"Sora",sans-serif;font-size:1.3rem;font-weight:800;color:var(--text);}
+.stat-unit{font-size:.75rem;color:var(--muted);font-weight:500;margin-left:3px;}
+.stat-date{font-size:.7rem;color:var(--muted);margin-top:4px;}
+.record-table{width:100%;border-collapse:collapse;}
+.record-table th{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;text-align:left;background:#F8FAFC;border-bottom:1px solid var(--border);}
+.record-table td{font-size:.85rem;padding:10px 12px;border-bottom:1px solid #F8FAFC;color:var(--text);}
+.record-table tr:last-child td{border-bottom:none;}
+.empty-msg{text-align:center;padding:32px;color:var(--muted);font-size:.85rem;}
+.report-footer{padding:16px 32px;border-top:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;background:#FAFBFF;}
+.footer-brand{font-family:"Sora",sans-serif;font-size:.8rem;font-weight:800;color:var(--text);}
+.footer-brand span{color:var(--accent);}
+.footer-date{font-size:.72rem;color:var(--muted);}
+.loading{text-align:center;padding:60px;color:var(--muted);}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid #E2E8F0;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:600;color:white;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .3s ease;}
+.toast-item.success{background:#059669;}.toast-item.info{background:#2563EB;}.toast-item.error{background:#DC2626;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr;}.action-bar{flex-direction:column;}}
+@media print{.topnav,.action-bar{display:none;}.report{box-shadow:none;border:none;}}
+</style>
+</head>
+<body>
+<div id="toastContainer" class="toast-container"></div>
+<nav class="topnav">
+  <div class="brand">Health<span>Sync</span></div>
+  <a href="/dashboard" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</nav>
+<div class="wrap">
+  <h1>📋 Health Report</h1>
+  <p class="sub">Your complete health summary — download or print for your doctor.</p>
+
+  <div class="action-bar">
+    <button class="btn-action btn-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+    <button class="btn-action btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+  </div>
+
+  <div class="report" id="reportContent">
+    <div class="loading"><div class="spinner"></div><br>Loading your health report...</div>
+  </div>
+</div>
+
+<script>
+const token  = localStorage.getItem('token')  || sessionStorage.getItem('token');
+const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+const userName = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Patient';
+
+if(!token){ window.location.href='/login'; }
+
+window.addEventListener('DOMContentLoaded', loadReport);
+
+async function loadReport(){
+  try{
+    const res = await fetch('/api/health-records/user/'+userId, {
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok) throw new Error();
+    const records = await res.json();
+    renderReport(records);
+  }catch(e){
+    renderReport([]);
+  }
+}
+
+function renderReport(records){
+  const today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const latest = {};
+  records.forEach(r=>{
+    if(!latest.weight && r.weight) latest.weight = r;
+    if(!latest.bp && r.systolicBP) latest.bp = r;
+    if(!latest.sugar && r.sugarLevel) latest.sugar = r;
+  });
+
+  document.getElementById('reportContent').innerHTML = `
+    <div class="report-header">
+      <div class="report-title">Health Summary Report</div>
+      <div class="report-meta">${userName} &nbsp;·&nbsp; Generated on ${today}</div>
+    </div>
+    <div class="report-body">
+
+      <div class="section">
+        <div class="section-title"><i class="fas fa-chart-bar"></i> Latest Vitals</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Weight</div>
+            <div class="stat-value">${latest.weight ? latest.weight.weight : '—'}<span class="stat-unit">kg</span></div>
+            <div class="stat-date">${latest.weight ? fmtDate(latest.weight.recordDate) : 'No data'}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Blood Pressure</div>
+            <div class="stat-value">${latest.bp ? latest.bp.bloodPressure : '—'}<span class="stat-unit">mmHg</span></div>
+            <div class="stat-date">${latest.bp ? fmtDate(latest.bp.recordDate) : 'No data'}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sugar Level</div>
+            <div class="stat-value">${latest.sugar ? latest.sugar.sugarLevel : '—'}<span class="stat-unit">mg/dL</span></div>
+            <div class="stat-date">${latest.sugar ? fmtDate(latest.sugar.recordDate) : 'No data'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="fas fa-list-alt"></i> All Health Records (${records.length} entries)</div>
+        ${records.length ? `
+        <table class="record-table">
+          <thead><tr><th>Date</th><th>Type</th><th>Weight</th><th>BP</th><th>Sugar</th><th>Notes</th></tr></thead>
+          <tbody>
+            ${records.slice(0,20).map(r=>`
+              <tr>
+                <td>${fmtDate(r.recordDate)}</td>
+                <td>${r.recordType||'—'}</td>
+                <td>${r.weight ? r.weight+' kg' : '—'}</td>
+                <td>${r.bloodPressure || '—'}</td>
+                <td>${r.sugarLevel ? r.sugarLevel+' mg/dL' : '—'}</td>
+                <td>${r.notes||'—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>` : '<div class="empty-msg"><i class="fas fa-inbox"></i><br>No health records found.</div>'}
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="fas fa-info-circle"></i> Summary</div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7">
+          This report contains ${records.length} health record(s) for <strong>${userName}</strong>.
+          Report generated by HealthSync on ${today}.
+          Please share this with your doctor for a complete health assessment.
+        </p>
+      </div>
+    </div>
+    <div class="report-footer">
+      <div class="footer-brand">Health<span>Sync</span></div>
+      <div class="footer-date">Generated ${today}</div>
+    </div>`;
+}
+
+async function downloadPDF(){
+  showToast('Generating PDF...','info');
+  try{
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const userName2 = localStorage.getItem('userName')||sessionStorage.getItem('userName')||'Patient';
+    const today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+
+    // Header
+    pdf.setFillColor(37,99,235);
+    pdf.rect(0,0,210,40,'F');
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(20);pdf.setFont('helvetica','bold');
+    pdf.text('Health Summary Report',20,18);
+    pdf.setFontSize(10);pdf.setFont('helvetica','normal');
+    pdf.text(userName2+' · Generated '+today,20,28);
+
+    // Fetch records
+    const res = await fetch('/api/health-records/user/'+userId,{headers:{'Authorization':'Bearer '+token}});
+    const records = res.ok ? await res.json() : [];
+
+    pdf.setTextColor(15,23,42);
+    let y=55;
+    pdf.setFontSize(13);pdf.setFont('helvetica','bold');
+    pdf.text('Health Records ('+records.length+' entries)',20,y);
+    y+=8;
+
+    // Table header
+    pdf.setFillColor(248,250,252);pdf.rect(15,y,180,8,'F');
+    pdf.setFontSize(9);pdf.setFont('helvetica','bold');pdf.setTextColor(100,116,139);
+    pdf.text('DATE',20,y+5.5);pdf.text('TYPE',55,y+5.5);pdf.text('WEIGHT',90,y+5.5);
+    pdf.text('BP',120,y+5.5);pdf.text('SUGAR',150,y+5.5);y+=10;
+
+    pdf.setFont('helvetica','normal');pdf.setTextColor(15,23,42);pdf.setFontSize(9);
+    records.slice(0,25).forEach(r=>{
+      if(y>270){pdf.addPage();y=20;}
+      pdf.text(fmtDate(r.recordDate)||'—',20,y);
+      pdf.text(r.recordType||'—',55,y);
+      pdf.text(r.weight?r.weight+' kg':'—',90,y);
+      pdf.text(r.systolicBP?r.systolicBP+'/'+r.diastolicBP:'—',120,y);
+      pdf.text(r.sugarLevel?r.sugarLevel+' mg/dL':'—',150,y);
+      y+=7;
+    });
+
+    y+=10;
+    pdf.setFontSize(8);pdf.setTextColor(148,163,184);
+    pdf.text('Generated by HealthSync · '+today,20,y);
+
+    pdf.save('HealthSync-Report-'+userName2.replace(/\s/g,'_')+'.pdf');
+    showToast('PDF downloaded! ✅','success');
+  }catch(e){showToast('PDF failed, try again','error');}
+}
+
+function fmtDate(d){
+  if(!d)return'—';
+  return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function showToast(msg,type){
+  const c=document.getElementById('toastContainer'),t=document.createElement('div');
+  t.className='toast-item '+type;
+  const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  t.innerHTML='<i class="fas '+icons[type]+'"></i><span>'+msg+'</span>';
+  c.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},4000);
+}
+</script>
+</body>
+</html>

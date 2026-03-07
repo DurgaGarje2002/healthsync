@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:,">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-bg: #0F172A;
+            --admin-surface: #1E293B;
+            --admin-border: #334155;
+            --admin-text: #F1F5F9;
+            --admin-muted: #94A3B8;
+            --red: #EF4444; --red-soft: rgba(239,68,68,0.1);
+            --blue: #3B82F6; --blue-soft: rgba(59,130,246,0.1);
+            --green: #10B981; --green-soft: rgba(16,185,129,0.1);
+            --amber: #F59E0B; --amber-soft: rgba(245,158,11,0.1);
+            --purple: #8B5CF6; --purple-soft: rgba(139,92,246,0.1);
+            --radius: 12px; --transition: 0.2s ease;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--admin-bg);color:var(--admin-text);display:flex;min-height:100vh;}
+
+        /* ── SIDEBAR ── */
+        .admin-sidebar{width:240px;background:var(--admin-surface);border-right:1px solid var(--admin-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+        .sb-brand{padding:22px 20px;border-bottom:1px solid var(--admin-border);display:flex;align-items:center;gap:10px;}
+        .sb-brand-icon{width:34px;height:34px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:white;animation:hb 3s ease-in-out infinite;}
+        @keyframes hb{0%,100%{transform:scale(1)}14%{transform:scale(1.1)}28%{transform:scale(1)}}
+        .sb-brand-name{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--admin-text);}
+        .sb-brand-badge{font-size:.6rem;background:var(--red);color:white;padding:2px 7px;border-radius:20px;font-weight:700;margin-left:4px;letter-spacing:.5px;}
+        .sb-admin{padding:16px 20px;border-bottom:1px solid var(--admin-border);display:flex;align-items:center;gap:10px;}
+        .sb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--red),#DC2626);color:white;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .sb-name{font-size:.82rem;font-weight:600;color:var(--admin-text);}
+        .sb-role{font-size:.68rem;color:var(--admin-muted);}
+        .sb-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;}
+        .sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--admin-muted);font-size:.83rem;font-weight:500;cursor:pointer;transition:all var(--transition);border:none;background:none;width:100%;text-align:left;}
+        .sb-item i{width:16px;text-align:center;}
+        .sb-item:hover{color:var(--admin-text);background:rgba(255,255,255,0.05);}
+        .sb-item.active{color:var(--red);background:var(--red-soft);}
+        .sb-divider{height:1px;background:var(--admin-border);margin:8px 0;}
+        .sb-footer{padding:14px 10px;border-top:1px solid var(--admin-border);}
+        .btn-logout-admin{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#FCA5A5;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all var(--transition);}
+        .btn-logout-admin:hover{background:rgba(239,68,68,.2);}
+        .btn-logout-admin i{width:16px;text-align:center;}
+
+        /* ── MAIN ── */
+        .admin-main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+        /* ── TOPBAR ── */
+        .admin-topbar{height:60px;background:var(--admin-surface);border-bottom:1px solid var(--admin-border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+        .topbar-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;}
+        .topbar-right{display:flex;align-items:center;gap:12px;}
+        .admin-badge{background:var(--red-soft);color:var(--red);border:1px solid rgba(239,68,68,.3);padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.5px;}
+        .topbar-time{font-size:.78rem;color:var(--admin-muted);}
+
+        /* ── CONTENT ── */
+        .admin-content{padding:24px 28px;flex:1;}
+
+        /* ── STATS ── */
+        .admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+        .a-stat{background:var(--admin-surface);border:1px solid var(--admin-border);border-radius:var(--radius);padding:20px;transition:all var(--transition);}
+        .a-stat:hover{border-color:#475569;transform:translateY(-2px);}
+        .a-stat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+        .a-stat-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+        .a-stat-icon.blue{background:var(--blue-soft);color:var(--blue);}
+        .a-stat-icon.green{background:var(--green-soft);color:var(--green);}
+        .a-stat-icon.amber{background:var(--amber-soft);color:var(--amber);}
+        .a-stat-icon.red{background:var(--red-soft);color:var(--red);}
+        .a-stat-trend{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:20px;}
+        .trend-up{background:var(--green-soft);color:var(--green);}
+        .trend-warn{background:var(--red-soft);color:var(--red);}
+        .a-stat-value{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--admin-text);margin-bottom:3px;}
+        .a-stat-label{font-size:.75rem;color:var(--admin-muted);}
+
+        /* ── PANEL ── */
+        .admin-panel{background:var(--admin-surface);border:1px solid var(--admin-border);border-radius:var(--radius);overflow:hidden;}
+        .panel-header{padding:18px 22px;border-bottom:1px solid var(--admin-border);display:flex;align-items:center;justify-content:space-between;}
+        .panel-header h3{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;color:var(--admin-text);}
+
+        /* ── TABS ── */
+        .admin-tabs{display:flex;gap:4px;padding:16px 22px;border-bottom:1px solid var(--admin-border);}
+        .a-tab{padding:8px 16px;border-radius:8px;border:none;background:none;color:var(--admin-muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:all var(--transition);font-family:'DM Sans',sans-serif;}
+        .a-tab:hover{color:var(--admin-text);background:rgba(255,255,255,0.05);}
+        .a-tab.active{background:var(--red-soft);color:var(--red);}
+
+        /* ── SEARCH BAR ── */
+        .admin-filter{padding:14px 22px;border-bottom:1px solid var(--admin-border);display:flex;gap:12px;}
+        .admin-search{flex:1;display:flex;align-items:center;gap:10px;background:#0F172A;border:1px solid var(--admin-border);border-radius:8px;padding:8px 14px;}
+        .admin-search i{color:var(--admin-muted);font-size:.82rem;}
+        .admin-search input{border:none;background:none;color:var(--admin-text);font-size:.84rem;font-family:'DM Sans',sans-serif;outline:none;width:100%;}
+        .admin-search input::placeholder{color:var(--admin-muted);}
+        .filter-select{padding:8px 12px;background:#0F172A;border:1px solid var(--admin-border);border-radius:8px;color:var(--admin-muted);font-size:.82rem;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
+
+        /* ── TABLE ── */
+        .a-table{width:100%;border-collapse:collapse;}
+        .a-table thead tr{background:#0F172A;}
+        .a-table th{padding:12px 20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--admin-muted);text-align:left;white-space:nowrap;}
+        .a-table tbody tr{border-top:1px solid var(--admin-border);transition:background var(--transition);}
+        .a-table tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .a-table td{padding:14px 20px;font-size:.83rem;color:var(--admin-text);vertical-align:middle;}
+        .user-cell{display:flex;align-items:center;gap:10px;}
+        .user-mini-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));color:white;font-weight:700;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .user-mini-name{font-weight:600;font-size:.83rem;}
+        .user-mini-email{font-size:.72rem;color:var(--admin-muted);}
+
+        /* ── BADGES ── */
+        .a-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;}
+        .a-badge.active{background:var(--green-soft);color:var(--green);}
+        .a-badge.admin{background:var(--red-soft);color:var(--red);}
+        .a-badge.user{background:var(--blue-soft);color:var(--blue);}
+        .a-badge.high{background:var(--red-soft);color:var(--red);}
+        .a-badge.medium{background:var(--amber-soft);color:var(--amber);}
+        .a-badge.low{background:var(--green-soft);color:var(--green);}
+
+        /* ── ACTION BUTTONS ── */
+        .btn-a{padding:5px 12px;border:none;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;transition:all var(--transition);}
+        .btn-a.view{background:var(--blue-soft);color:var(--blue);}
+        .btn-a.view:hover{background:var(--blue);color:white;}
+        .btn-a.del{background:var(--red-soft);color:var(--red);}
+        .btn-a.del:hover{background:var(--red);color:white;}
+
+        /* tab content */
+        .tab-content-panel{display:none;}
+        .tab-content-panel.active{display:block;}
+
+        /* empty */
+        .a-empty{text-align:center;padding:50px 20px;color:var(--admin-muted);}
+        .a-empty i{font-size:2.5rem;margin-bottom:12px;display:block;opacity:.3;}
+
+        /* toast */
+        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+        .toast-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;background:var(--admin-surface);border:1px solid var(--admin-border);border-left:3px solid;min-width:260px;font-size:.83rem;font-weight:500;color:var(--admin-text);animation:tin .3s ease;}
+        @keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+        .toast-item.success{border-left-color:var(--green);}
+        .toast-item.error{border-left-color:var(--red);}
+        .toast-item.info{border-left-color:var(--blue);}
+        .toast-item.success i{color:var(--green);}
+        .toast-item.error i{color:var(--red);}
+        .toast-item.info i{color:var(--blue);}
+
+        /* loading */
+        .loading-overlay{position:fixed;inset:0;background:rgba(15,23,42,.8);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);}
+        .spin-ring{width:40px;height:40px;border:3px solid rgba(239,68,68,.2);border-top-color:var(--red);border-radius:50%;animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:900px){
+            .admin-sidebar{transform:translateX(-240px);transition:transform .25s ease;}
+            .admin-sidebar.open{transform:translateX(0);}
+            .admin-main{margin-left:0;}
+            .admin-stats{grid-template-columns:repeat(2,1fr);}
+        }
+        .risk-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.3px;}
+        .risk-pill.high{background:#4C0519;color:#FB7185;}
+        .risk-pill.medium{background:#451A03;color:#FB923C;}
+        .risk-pill.low{background:#052E16;color:#34D399;}
+    </style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spin-ring"></div></div>
+
+<!-- View User Modal -->
+<div class="modal fade" id="viewUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;border:1px solid #1E293B;background:#0F172A;color:#F1F5F9;">
+      <div class="modal-header" style="border-bottom:1px solid #1E293B;padding:20px 24px;">
+        <h5 class="modal-title" style="font-weight:700;display:flex;align-items:center;gap:10px;">
+          <i class="fas fa-user-circle" style="color:#3B82F6"></i> User Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:24px;">
+        <div style="display:grid;gap:14px;">
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">ID</span>
+            <span id="vuId" style="font-weight:600;font-size:.9rem;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">Name</span>
+            <span id="vuName" style="font-weight:600;font-size:.9rem;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">Email</span>
+            <span id="vuEmail" style="font-weight:600;font-size:.9rem;word-break:break-all;text-align:right;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">Role</span>
+            <span id="vuRole" style="font-weight:600;font-size:.9rem;color:#3B82F6;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">Phone</span>
+            <span id="vuPhone" style="font-weight:600;font-size:.9rem;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#1E293B;border-radius:10px;">
+            <span style="color:#94A3B8;font-size:.84rem;">Date of Birth</span>
+            <span id="vuDob" style="font-weight:600;font-size:.9rem;"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid #1E293B;padding:16px 24px;">
+        <button class="btn-a" data-bs-dismiss="modal" style="padding:9px 20px;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="sb-brand">
+        <div class="sb-brand-icon" style="background:transparent;padding:0"><i class="fas fa-heartbeat"></i></div>
+        <div>
+            <span class="sb-brand-name">HealthSync</span>
+            <span class="sb-brand-badge">ADMIN</span>
+        </div>
+    </div>
+    <div class="sb-admin">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div>
+            <div class="sb-name" id="sbName">Administrator</div>
+            <div class="sb-role">Super Admin</div>
+        </div>
+    </div>
+    <nav class="sb-nav">
+        <button class="sb-item active" onclick="switchTab('users',this)"><i class="fas fa-users"></i>Users</button>
+        <button class="sb-item" onclick="switchTab('records',this)"><i class="fas fa-file-medical-alt"></i>Health Records</button>
+        <button class="sb-item" onclick="switchTab('cards',this)"><i class="fas fa-id-card"></i>Emergency Cards</button>
+        <button class="sb-item" onclick="switchTab('feedback',this)"><i class="fas fa-comment-dots"></i>Feedback</button>
+        <div class="sb-divider"></div>
+        <a href="/dashboard" class="sb-item" style="text-decoration:none"><i class="fas fa-th-large"></i>User Dashboard</a>
+    </nav>
+    <div class="sb-footer">
+        <button class="btn-logout-admin" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="admin-main">
+    <header class="admin-topbar">
+        <div class="topbar-title">Admin Control Panel</div>
+        <div class="topbar-right">
+            <span class="admin-badge">ADMIN ACCESS</span>
+            <span class="topbar-time" id="topbarTime"></span>
+        </div>
+    </header>
+
+    <div class="admin-content">
+
+        <!-- Stats -->
+        <div class="admin-stats">
+            <div class="a-stat">
+                <div class="a-stat-head">
+                    <div class="a-stat-icon blue"><i class="fas fa-users"></i></div>
+                    <span class="a-stat-trend trend-up">Live</span>
+                </div>
+                <div class="a-stat-value" id="totalUsers">—</div>
+                <div class="a-stat-label">Total Users</div>
+            </div>
+            <div class="a-stat">
+                <div class="a-stat-head">
+                    <div class="a-stat-icon green"><i class="fas fa-heartbeat"></i></div>
+                    <span class="a-stat-trend trend-up">Live</span>
+                </div>
+                <div class="a-stat-value" id="totalRecords">—</div>
+                <div class="a-stat-label">Health Records</div>
+            </div>
+            <div class="a-stat">
+                <div class="a-stat-head">
+                    <div class="a-stat-icon amber"><i class="fas fa-id-card"></i></div>
+                </div>
+                <div class="a-stat-value" id="totalCards">—</div>
+                <div class="a-stat-label">Emergency Cards</div>
+            </div>
+            <div class="a-stat">
+                <div class="a-stat-head">
+                    <div class="a-stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                    <span class="a-stat-trend trend-warn">Alert</span>
+                </div>
+                <div class="a-stat-value" id="highRiskUsers">—</div>
+                <div class="a-stat-label">High Risk Patients</div>
+            </div>
+        </div>
+
+        <!-- Panel -->
+        <div class="admin-panel">
+            <div class="admin-tabs">
+                <button class="a-tab active" id="tab-users" onclick="switchTab('users',this)">
+                    <i class="fas fa-users me-2"></i>Users
+                </button>
+                <button class="a-tab" id="tab-records" onclick="switchTab('records',this)">
+                    <i class="fas fa-file-medical me-2"></i>Health Records
+                </button>
+                <button class="a-tab" id="tab-cards" onclick="switchTab('cards',this)">
+                    <i class="fas fa-id-card me-2"></i>Emergency Cards
+                </button>
+                <button class="a-tab" id="tab-feedback" onclick="switchTab('feedback',this)">
+                    <i class="fas fa-comment-dots me-2"></i>Feedback
+                </button>
+            </div>
+
+            <!-- Users -->
+            <div class="tab-content-panel active" id="panel-users">
+                <div class="panel-header">
+                    <h3>All Registered Users</h3>
+                    <span class="a-badge user" id="usersCountBadge">Loading...</span>
+                </div>
+                <div class="admin-filter">
+                    <div class="admin-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchUsers" placeholder="Search by name or email…" onkeyup="filterTable('usersTableBody','searchUsers')">
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="a-table">
+                        <thead><tr><th>#</th><th>User</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="6"><div class="a-empty"><i class="fas fa-spinner fa-spin"></i>Loading users…</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Records -->
+            <div class="tab-content-panel" id="panel-records">
+                <div class="panel-header">
+                    <h3>All Health Records</h3>
+                </div>
+                <div class="admin-filter">
+                    <div class="admin-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchRecords" placeholder="Search records…" onkeyup="filterTable('recordsTableBody','searchRecords')">
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="a-table">
+                        <thead><tr><th>ID</th><th>User</th><th>Date</th><th>Weight</th><th>Blood Pressure</th><th>Sugar</th><th>Type</th></tr></thead>
+                        <tbody id="recordsTableBody">
+                            <tr><td colspan="7"><div class="a-empty"><i class="fas fa-info-circle"></i>Create <code>GET /api/admin/health-records</code> endpoint to populate this table.</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="tab-content-panel" id="panel-cards">
+                <div class="panel-header">
+                    <h3>Emergency Cards</h3>
+                </div>
+                <div class="admin-filter">
+                    <div class="admin-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchCards" placeholder="Search cards…" onkeyup="filterTable('cardsTableBody','searchCards')">
+                    </div>
+                    <select class="filter-select" onchange="filterByRisk(this.value)">
+                        <option value="">All Risk Levels</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="a-table">
+                        <thead><tr><th>User</th><th>Risk</th><th>Condition</th><th>Allergies</th><th>Hospital</th><th>Contact</th><th>Actions</th></tr></thead>
+                        <tbody id="cardsTableBody">
+                            <tr><td colspan="7"><div class="a-empty"><i class="fas fa-info-circle"></i>Create <code>GET /api/admin/patient-cards</code> endpoint to populate this table.</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feedback Panel -->
+            <div class="tab-content-panel" id="panel-feedback">
+                <div class="panel-header">
+                    <h3>User Feedback</h3>
+                    <button class="btn-refresh" onclick="loadFeedback()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="a-table">
+                        <thead><tr><th>User</th><th>Type</th><th>Subject</th><th>Message</th><th>Rating</th><th>Date</th></tr></thead>
+                        <tbody id="feedbackTableBody">
+                            <tr><td colspan="6"><div class="a-empty"><i class="fas fa-spinner fa-spin"></i> Loading feedback...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── Auth ─────────────────────────────────────────
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const role  = localStorage.getItem('role')  || sessionStorage.getItem('role');
+const adminName  = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Admin';
+const adminEmail = localStorage.getItem('email')    || sessionStorage.getItem('email')    || '';
+
+if (!token) { alert('Please login first'); window.location.href = '/login'; }
+else if (role !== 'ROLE_ADMIN') { alert('Admin access required'); window.location.href = '/dashboard'; }
+
+// ── Init ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const initials = adminName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('sbAvatar').textContent = initials;
+    document.getElementById('sbName').textContent = adminName;
+
+    setInterval(() => {
+        document.getElementById('topbarTime').textContent =
+            new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    }, 1000);
+
+    loadStats();
+    loadUsers();
+});
+
+// ── Tab switching ─────────────────────────────────
+let currentTab = 'users';
+let allUsers   = [];  // populated by loadUsers(), used by viewUser()
+function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.a-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+
+    document.getElementById(`panel-${tab}`).classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+        const sbMatch = document.querySelector(`.sb-item[onclick*="'${tab}'"]`);
+        if (sbMatch) sbMatch.classList.add('active');
+    }
+
+    if (tab === 'users') loadUsers();
+    else if (tab === 'records') loadRecords();
+    else if (tab === 'cards') loadCards();
+    else if (tab === 'feedback') loadFeedback();
+}
+
+// ── Stats ─────────────────────────────────────────
+async function loadStats() {
+    try {
+        const res = await fetch('/api/admin/users', { headers:{'Authorization':'Bearer '+token} });
+        if (!res.ok) throw new Error();
+        const users = await res.json();
+        document.getElementById('totalUsers').textContent = users.length;
+        const highRisk = users.filter(u => u.riskLevel === 'HIGH').length;
+        document.getElementById('highRiskUsers').textContent = highRisk;
+    } catch { document.getElementById('totalUsers').textContent = 'Err'; }
+    document.getElementById('totalRecords').textContent = '—';
+    document.getElementById('totalCards').textContent = '—';
+}
+
+// ── Users ─────────────────────────────────────────
+async function loadUsers() {
+    const tbody = document.getElementById('usersTableBody');
+    try {
+        const res = await fetch('/api/admin/users', { headers:{'Authorization':'Bearer '+token} });
+        if (!res.ok) throw new Error('Failed to load');
+        const users = await res.json();
+        allUsers = users;  // save for viewUser()
+
+        document.getElementById('usersCountBadge').textContent = `${users.length} users`;
+
+        if (!users.length) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="a-empty"><i class="fas fa-users"></i>No users found</div></td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = users.map((u,i) => `
+            <tr>
+                <td style="color:var(--admin-muted)">${u.id}</td>
+                <td>
+                    <div class="user-cell">
+                        <div class="user-mini-avatar">${(u.name||'?').charAt(0).toUpperCase()}</div>
+                        <div>
+                            <div class="user-mini-name">${u.name||'N/A'}</div>
+                            <div class="user-mini-email">${u.email}</div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="a-badge ${u.role==='ROLE_ADMIN'?'admin':'user'}">${(u.role||'').replace('ROLE_','')}</span></td>
+                <td style="color:var(--admin-muted)">${u.createdAt ? fmtDate(u.createdAt) : 'N/A'}</td>
+                <td><span class="a-badge active">Active</span></td>
+                <td style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="btn-a view" onclick="viewUser(${u.id})"><i class="fas fa-eye me-1"></i>View</button>
+                    <button class="btn-a" style="background:#FEF9C3;color:#92400E;border:1px solid #FDE68A" onclick="toggleRole(${u.id},'${u.role}')">${u.role==='ROLE_ADMIN'?'<i class="fas fa-user me-1"></i>Remove Admin':'<i class="fas fa-shield-alt me-1"></i>Make Admin'}</button>
+                    ${u.role!=='ROLE_ADMIN'?`<button class="btn-a del" onclick="deleteUser(${u.id})"><i class="fas fa-trash me-1"></i>Delete</button>`:''}
+                </td>
+            </tr>`).join('');
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6"><div class="a-empty" style="color:var(--red)"><i class="fas fa-exclamation-circle"></i>Failed to load users</div></td></tr>`;
+    }
+}
+
+async function loadRecords() {
+    const tbody = document.getElementById('recordsTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px"><i class="fas fa-spinner fa-spin me-2"></i>Loading records...</td></tr>';
+    try {
+        const res = await fetch('/api/health-records', { headers:{'Authorization':'Bearer '+token} });
+        if (!res.ok) throw new Error();
+        const records = await res.json();
+        document.getElementById('totalRecords').textContent = records.length;
+        if (!records.length) {
+            tbody.innerHTML = '<tr><td colspan="7"><div class="a-empty"><i class="fas fa-clipboard-list"></i>No health records found.</div></td></tr>';
+            return;
+        }
+        tbody.innerHTML = records.map(r => `
+            <tr>
+                <td style="color:var(--admin-muted)">${r.id}</td>
+                <td style="color:var(--admin-muted)">User #${r.userId}</td>
+                <td>${r.recordDate || '—'}</td>
+                <td>${r.weight != null ? r.weight + ' kg' : '—'}</td>
+                <td>${r.bloodPressure || '—'}</td>
+                <td>${r.sugarLevel != null ? r.sugarLevel + ' mg/dL' : '—'}</td>
+                <td><span class="a-badge user">${r.recordType || 'General'}</span></td>
+            </tr>`).join('');
+    } catch {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="a-empty" style="color:var(--red)"><i class="fas fa-exclamation-circle"></i>Failed to load records.</div></td></tr>';
+    }
+}
+
+async function loadCards() {
+    const tbody = document.getElementById('cardsTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px"><i class="fas fa-spinner fa-spin me-2"></i>Loading cards...</td></tr>';
+    try {
+        const res = await fetch('/api/admin/patient-cards', { headers:{'Authorization':'Bearer '+token} });
+        if (!res.ok) throw new Error();
+        const cards = await res.json();
+        document.getElementById('totalCards').textContent = cards.length;
+        if (!cards.length) {
+            tbody.innerHTML = '<tr><td colspan="7"><div class="a-empty"><i class="fas fa-id-card"></i>No emergency cards found.</div></td></tr>';
+            return;
+        }
+        tbody.innerHTML = cards.map(c => `
+            <tr>
+                <td>User #${c.userId}</td>
+                <td><span class="risk-pill ${(c.riskLevel||'low').toLowerCase()}">${c.riskLevel||'LOW'}</span></td>
+                <td>${c.currentDisease||'—'}</td>
+                <td>${c.allergies||'—'}</td>
+                <td>${c.hospitalName||'—'}</td>
+                <td>${c.emergencyContact||'—'}</td>
+                <td><a href="/emergency/${c.publicId}" target="_blank" class="btn-a view"><i class="fas fa-eye me-1"></i>View</a></td>
+            </tr>`).join('');
+    } catch {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="a-empty" style="color:var(--red)"><i class="fas fa-exclamation-circle"></i>Failed to load cards.</div></td></tr>';
+    }
+}
+
+function viewUser(id) {
+    const u = allUsers.find(x => x.id === id);
+    if (!u) { showToast('User not found','error'); return; }
+    document.getElementById('vuId').textContent    = u.id;
+    document.getElementById('vuName').textContent  = u.name  || 'N/A';
+    document.getElementById('vuEmail').textContent = u.email || 'N/A';
+    document.getElementById('vuRole').textContent  = (u.role||'').replace('ROLE_','');
+    document.getElementById('vuPhone').textContent = u.phone || 'N/A';
+    document.getElementById('vuDob').textContent   = u.dateOfBirth || 'N/A';
+    new bootstrap.Modal(document.getElementById('viewUserModal')).show();
+}
+
+async function toggleRole(id, currentRole) {
+    const newRole  = currentRole === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
+    const label    = newRole === 'ROLE_ADMIN' ? 'make this user an Admin' : 'remove Admin rights from this user';
+    if (!confirm(`Are you sure you want to ${label}?`)) return;
+    showLoading();
+    try {
+        const res = await fetch(`/api/admin/users/${id}/role`, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: newRole })
+        });
+        if (!res.ok) throw new Error();
+        showToast(newRole === 'ROLE_ADMIN' ? '✅ User is now Admin' : '✅ Admin rights removed', 'success');
+        loadUsers();
+    } catch(e) {
+        showToast('Failed to update role', 'error');
+    } finally { hideLoading(); }
+}
+
+async function deleteUser(id) {
+    if (!confirm('Delete this user permanently?')) return;
+    showLoading();
+    try {
+        const res = await fetch(`/api/admin/users/${id}`, {
+            method:'DELETE', headers:{'Authorization':'Bearer '+token}
+        });
+        if (!res.ok) throw new Error();
+        showToast('User deleted successfully', 'success');
+        loadUsers(); loadStats();
+    } catch { showToast('Failed to delete user','error'); }
+    finally { hideLoading(); }
+}
+
+// ── Filter ────────────────────────────────────────
+function filterTable(tbodyId, inputId) {
+    const q = document.getElementById(inputId).value.toLowerCase();
+    document.querySelectorAll(`#${tbodyId} tr`).forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+function filterByRisk(level) {
+    document.querySelectorAll('#cardsTableBody tr').forEach(row => {
+        row.style.display = !level || row.textContent.toUpperCase().includes(level) ? '' : 'none';
+    });
+}
+
+// ── Logout ────────────────────────────────────────
+function logout() { localStorage.clear(); sessionStorage.clear(); window.location.href = '/login'; }
+
+// ── Utilities ─────────────────────────────────────
+function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+function hideLoading()  { document.getElementById('loadingOverlay').style.display = 'none'; }
+
+function showToast(msg, type='info') {
+    const c = document.getElementById('toastContainer');
+    const icons = {success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+    const t = document.createElement('div');
+    t.className = `toast-item ${type}`;
+    t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 4000);
+}
+
+function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+}
+
+async function loadFeedback() {
+    const tbody = document.getElementById('feedbackTableBody');
+    try {
+        const res = await fetch('/api/feedback/all', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) throw new Error();
+        const list = await res.json();
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="6"><div class="a-empty"><i class="fas fa-comment-slash"></i> No feedback yet.</div></td></tr>';
+            return;
+        }
+        const stars = r => r ? '★'.repeat(r) + '☆'.repeat(5-r) : '—';
+        tbody.innerHTML = list.map(f => `
+            <tr>
+                <td>${f.user ? f.user.name : '—'}</td>
+                <td><span class="role-badge">${f.feedbackType}</span></td>
+                <td>${f.subject}</td>
+                <td style="max-width:200px;white-space:normal">${f.message}</td>
+                <td style="color:#F59E0B">${stars(f.rating)}</td>
+                <td>${fmtDate(f.createdAt)}</td>
+            </tr>`).join('');
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="a-empty"><i class="fas fa-exclamation-circle"></i> Failed to load feedback.</div></td></tr>';
+    }
+}
+</script>
+</body>
+</html>

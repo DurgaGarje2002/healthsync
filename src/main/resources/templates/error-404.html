@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Not Found | HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0F172A;position:relative;overflow:hidden;}
+        .glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;}
+        .g1{width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.2),transparent);top:-200px;left:-200px;}
+        .g2{width:500px;height:500px;background:radial-gradient(circle,rgba(139,92,246,.15),transparent);bottom:-100px;right:-100px;}
+
+        .err-box{position:relative;z-index:1;max-width:560px;width:100%;text-align:center;animation:up .5s ease;}
+        @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+        .err-code{font-family:'Sora',sans-serif;font-size:clamp(5rem,18vw,9rem);font-weight:800;line-height:1;background:linear-gradient(135deg,#60A5FA,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+
+        .err-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:#93C5FD;padding:5px 16px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.8px;margin-bottom:20px;}
+
+        .err-title{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;color:#F1F5F9;margin-bottom:10px;}
+        .err-desc{color:#94A3B8;font-size:.9rem;line-height:1.7;margin-bottom:32px;max-width:380px;margin-inline:auto;}
+
+        /* floating illustration */
+        .err-visual{font-size:5rem;margin-bottom:12px;display:block;animation:bob 3s ease-in-out infinite;}
+        @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+        /* quick links */
+        .quick-links{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px 24px;margin-bottom:28px;text-align:left;}
+        .quick-links h4{font-size:.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;}
+        .ql-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:#94A3B8;font-size:.84rem;font-weight:500;text-decoration:none;transition:all .2s;}
+        .ql-item:hover{background:rgba(255,255,255,.06);color:#F1F5F9;}
+        .ql-item i{width:16px;text-align:center;font-size:.8rem;}
+
+        .err-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+        .btn-e{padding:11px 22px;border-radius:10px;font-size:.85rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+        .btn-primary-e{background:linear-gradient(135deg,#3B82F6,#2563EB);color:white;box-shadow:0 6px 20px rgba(59,130,246,.25);}
+        .btn-primary-e:hover{opacity:.9;transform:translateY(-1px);}
+        .btn-ghost-e{background:rgba(255,255,255,.05);color:#94A3B8;border:1px solid rgba(255,255,255,.1);}
+        .btn-ghost-e:hover{background:rgba(255,255,255,.09);color:#F1F5F9;}
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <div class="err-box">
+        <span class="err-visual">🔍</span>
+        <div class="err-badge"><i class="fas fa-map-marker-alt"></i>PAGE NOT FOUND</div>
+        <div class="err-code">404</div>
+        <h1 class="err-title">Nothing to see here</h1>
+        <p class="err-desc">The page you're looking for doesn't exist or has been moved to a different address.</p>
+
+        <div class="quick-links">
+            <h4>Try one of these</h4>
+            <a href="/dashboard" class="ql-item"><i class="fas fa-th-large"></i>My Dashboard</a>
+            <a href="/emergency-card-setup" class="ql-item"><i class="fas fa-id-card"></i>Emergency Card Setup</a>
+            <a href="/profile" class="ql-item"><i class="fas fa-user-circle"></i>Profile Settings</a>
+            <a href="/" class="ql-item"><i class="fas fa-home"></i>Home</a>
+        </div>
+
+        <div class="err-btns">
+            <a href="/" class="btn-e btn-primary-e"><i class="fas fa-home"></i>Go Home</a>
+            <a href="javascript:history.back()" class="btn-e btn-ghost-e"><i class="fas fa-arrow-left"></i>Go Back</a>
+        </div>
+    </div>
+</body>
+</html>

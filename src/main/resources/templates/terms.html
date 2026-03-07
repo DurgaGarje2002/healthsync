@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--blue:#2563EB;--blue-dk:#1D4ED8;--green:#10B981;--text:#0F172A;--muted:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--card:#FFFFFF;--radius:14px;--tr:.2s ease;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+        .site-nav{position:sticky;top:0;z-index:100;padding:0 max(24px,6vw);height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(248,250,252,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+        .nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+        .nb-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));display:flex;align-items:center;justify-content:center;}
+        .nb-name{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text);}
+        .nb-name span{color:var(--blue);}
+        .btn-nav{padding:8px 18px;border-radius:8px;background:var(--blue);color:white;font-size:.86rem;font-weight:600;text-decoration:none;}
+        .btn-nav:hover{opacity:.9;color:white;}
+
+        .doc-hero{padding:64px max(24px,8vw) 48px;background:linear-gradient(170deg,#F5F3FF,#F8FAFC);border-bottom:1px solid var(--border);}
+        .doc-badge{display:inline-flex;align-items:center;gap:7px;background:#F5F3FF;border:1px solid #DDD6FE;color:#7C3AED;padding:5px 14px;border-radius:20px;font-size:.73rem;font-weight:700;letter-spacing:.4px;margin-bottom:18px;}
+        .doc-hero h1{font-family:'Sora',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:10px;}
+        .doc-meta{font-size:.83rem;color:var(--muted);}
+        .doc-meta span{font-weight:600;color:var(--text);}
+
+        .doc-layout{display:grid;grid-template-columns:220px 1fr;gap:48px;padding:56px max(24px,8vw);align-items:start;max-width:1100px;margin:0 auto;}
+
+        .doc-toc{position:sticky;top:80px;}
+        .toc-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;}
+        .toc-link{display:block;padding:7px 12px;border-left:2px solid var(--border);font-size:.82rem;color:var(--muted);text-decoration:none;transition:all var(--tr);margin-bottom:2px;border-radius:0 6px 6px 0;}
+        .toc-link:hover,.toc-link.active{color:#7C3AED;border-left-color:#7C3AED;background:#F5F3FF;}
+
+        .doc-content section{margin-bottom:52px;scroll-margin-top:88px;}
+        .doc-content section:last-child{margin-bottom:0;}
+        .sec-num{display:inline-block;background:#F5F3FF;color:#7C3AED;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:10px;}
+        .doc-content h2{font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:14px;}
+        .doc-content p{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:12px;}
+        .doc-content p:last-child{margin-bottom:0;}
+        .doc-content ul{list-style:none;padding:0;margin:12px 0;}
+        .doc-content ul li{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:8px;}
+        .doc-content ul li::before{content:'';width:6px;height:6px;border-radius:50%;background:#7C3AED;flex-shrink:0;margin-top:8px;}
+
+        .highlight-box{background:#F5F3FF;border:1px solid #DDD6FE;border-left:4px solid #7C3AED;border-radius:var(--radius);padding:18px 20px;margin:16px 0;}
+        .highlight-box.warn{background:#FFFBEB;border-color:#FDE68A;border-left-color:#F59E0B;}
+        .highlight-box p{margin:0;color:#4C1D95;font-size:.88rem;}
+        .highlight-box.warn p{color:#78350F;}
+
+        .contact-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-top:16px;}
+        .contact-box p{font-size:.87rem;color:var(--muted);margin-bottom:6px;}
+        .contact-box a{color:var(--blue);text-decoration:none;font-weight:500;}
+        .contact-box a:hover{text-decoration:underline;}
+
+        footer{background:#0F172A;padding:28px max(24px,6vw);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+        footer p{font-size:.8rem;color:#475569;}
+        .footer-links{display:flex;gap:20px;}
+        .footer-links a{font-size:.8rem;color:#475569;text-decoration:none;}
+        .footer-links a:hover{color:#F1F5F9;}
+
+        @media(max-width:768px){.doc-layout{grid-template-columns:1fr;}.doc-toc{display:none;}}
+    </style>
+</head>
+<body>
+
+<nav class="site-nav">
+    <a href="/" class="nav-brand">
+        <div class="nb-icon"><svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+        <span class="nb-name">Health<span>Sync</span></span>
+    </a>
+    <a href="/login" class="btn-nav">Login</a>
+</nav>
+
+<div class="doc-hero">
+    <div class="doc-badge"><i class="fas fa-file-contract"></i>LEGAL</div>
+    <h1>Terms of Service</h1>
+    <p class="doc-meta">Last updated: <span>January 1, 2026</span> &nbsp;·&nbsp; Effective: <span>January 1, 2026</span></p>
+</div>
+
+<div class="doc-layout">
+
+    <aside class="doc-toc">
+        <div class="toc-title">On this page</div>
+        <a href="#acceptance" class="toc-link">1. Acceptance</a>
+        <a href="#eligibility" class="toc-link">2. Eligibility</a>
+        <a href="#account" class="toc-link">3. Your Account</a>
+        <a href="#permitted-use" class="toc-link">4. Permitted Use</a>
+        <a href="#health-disclaimer" class="toc-link">5. Health Disclaimer</a>
+        <a href="#emergency-card" class="toc-link">6. Emergency Card</a>
+        <a href="#content" class="toc-link">7. Your Content</a>
+        <a href="#termination" class="toc-link">8. Termination</a>
+        <a href="#liability" class="toc-link">9. Liability</a>
+        <a href="#governing-law" class="toc-link">10. Governing Law</a>
+        <a href="#contact" class="toc-link">11. Contact</a>
+    </aside>
+
+    <div class="doc-content">
+
+        <div class="highlight-box warn" style="margin-bottom:36px">
+            <p><strong>Please read carefully.</strong> These Terms of Service govern your use of HealthSync. By creating an account or using our platform, you agree to be bound by these terms.</p>
+        </div>
+
+        <section id="acceptance">
+            <div class="sec-num">01</div>
+            <h2>Acceptance of Terms</h2>
+            <p>These Terms of Service ("Terms") constitute a legally binding agreement between you and HealthSync Technologies Pvt. Ltd. ("HealthSync", "we", "us", "our") governing your use of the HealthSync platform, website, and related services.</p>
+            <p>By accessing or using HealthSync, you confirm that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree, please do not use our services.</p>
+        </section>
+
+        <section id="eligibility">
+            <div class="sec-num">02</div>
+            <h2>Eligibility</h2>
+            <p>To use HealthSync, you must:</p>
+            <ul>
+                <li>Be at least 13 years of age</li>
+                <li>Have the legal capacity to enter into a binding agreement</li>
+                <li>Not be barred from using our services under applicable law</li>
+                <li>Provide accurate and truthful information when creating your account</li>
+            </ul>
+            <p>Users between 13–18 years of age should have parental or guardian consent before using HealthSync.</p>
+        </section>
+
+        <section id="account">
+            <div class="sec-num">03</div>
+            <h2>Your Account</h2>
+            <p>When you create an account with HealthSync, you are responsible for:</p>
+            <ul>
+                <li>Maintaining the confidentiality of your password and account credentials</li>
+                <li>All activity that occurs under your account</li>
+                <li>Notifying us immediately of any unauthorized use of your account</li>
+                <li>Ensuring the accuracy of the information you provide</li>
+            </ul>
+            <p>You may not share your account with others or create multiple accounts. We reserve the right to terminate accounts that violate these terms.</p>
+        </section>
+
+        <section id="permitted-use">
+            <div class="sec-num">04</div>
+            <h2>Permitted Use</h2>
+            <p>HealthSync is provided for personal, non-commercial health management purposes. You agree not to:</p>
+            <ul>
+                <li>Use the platform for any unlawful purpose or in violation of applicable regulations</li>
+                <li>Attempt to gain unauthorized access to our systems or other users' accounts</li>
+                <li>Upload malicious code, viruses, or harmful content</li>
+                <li>Reverse engineer, decompile, or attempt to extract our source code</li>
+                <li>Use automated tools to scrape or collect data from the platform</li>
+                <li>Impersonate another person or entity</li>
+                <li>Share your account credentials with third parties</li>
+            </ul>
+        </section>
+
+        <section id="health-disclaimer">
+            <div class="sec-num">05</div>
+            <h2>Health Information Disclaimer</h2>
+            <div class="highlight-box">
+                <p><strong>Important:</strong> HealthSync is a personal health tracking tool, not a medical service. The information on this platform does not constitute medical advice, diagnosis, or treatment.</p>
+            </div>
+            <p>Always consult a qualified healthcare professional before making decisions about your health, medications, or treatments. HealthSync is not responsible for any health decisions made based on data recorded or displayed on our platform.</p>
+            <p>The health insights and suggestions provided are informational only and are not a substitute for professional medical judgment.</p>
+        </section>
+
+        <section id="emergency-card">
+            <div class="sec-num">06</div>
+            <h2>Emergency Card Feature</h2>
+            <p>The Emergency Card feature allows you to create a public-facing medical summary accessible via QR code. By using this feature, you understand and agree that:</p>
+            <ul>
+                <li>The information on your emergency card is accessible to anyone who scans your QR code</li>
+                <li>You are responsible for the accuracy and completeness of your emergency card data</li>
+                <li>HealthSync does not guarantee that emergency responders will use or have access to this information</li>
+                <li>You should keep your emergency card updated as your medical situation changes</li>
+            </ul>
+            <p>HealthSync is not liable for any consequences arising from outdated, incomplete, or inaccurate emergency card information.</p>
+        </section>
+
+        <section id="content">
+            <div class="sec-num">07</div>
+            <h2>Your Content</h2>
+            <p>You retain full ownership of all health data, documents, and information you upload or enter into HealthSync. By using our platform, you grant us a limited license to store, process, and display your content solely for the purpose of providing our services to you.</p>
+            <p>We do not claim ownership of your health data. When you delete your account, your data is permanently removed from our systems within 30 days.</p>
+        </section>
+
+        <section id="termination">
+            <div class="sec-num">08</div>
+            <h2>Termination</h2>
+            <p>You may delete your account at any time from your Profile Settings. We may suspend or terminate your account if you violate these Terms, engage in fraudulent activity, or if required by law.</p>
+            <p>Upon termination, your right to use the platform ceases immediately. Data deletion follows the timeline described in our Privacy Policy.</p>
+        </section>
+
+        <section id="liability">
+            <div class="sec-num">09</div>
+            <h2>Limitation of Liability</h2>
+            <p>HealthSync is provided "as is" without warranties of any kind. To the fullest extent permitted by applicable law, HealthSync disclaims all warranties, express or implied, including warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+            <p>HealthSync shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use our platform, even if we have been advised of the possibility of such damages.</p>
+            <p>Our total liability to you for any claims arising from your use of HealthSync shall not exceed the amount you paid us in the 12 months preceding the claim (which may be zero if you use our free service).</p>
+        </section>
+
+        <section id="governing-law">
+            <div class="sec-num">10</div>
+            <h2>Governing Law</h2>
+            <p>These Terms shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law provisions. Any disputes arising from these Terms or your use of HealthSync shall be subject to the exclusive jurisdiction of the courts in Pune, Maharashtra, India.</p>
+            <p>We encourage you to contact us to resolve any disputes informally before pursuing legal action.</p>
+        </section>
+
+        <section id="contact">
+            <div class="sec-num">11</div>
+            <h2>Contact Us</h2>
+            <p>For any questions about these Terms of Service, please contact us:</p>
+            <div class="contact-box">
+                <p><strong>HealthSync Technologies Pvt. Ltd.</strong></p>
+                <p>Legal Team: support@healthsync.com</p>
+                <p>Support: support@healthsync.com</p>
+                <p>Address: Pune, Maharashtra, India — 411001</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 HealthSync · All rights reserved</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/contact">Contact</a>
+    </div>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.doc-content section');
+const links    = document.querySelectorAll('.toc-link');
+const obs = new IntersectionObserver(entries => {
+    entries => 
+    entries.forEach(en => {
+        if (en.isIntersecting) {
+            links.forEach(l => l.classList.remove('active'));
+            const link = document.querySelector(`.toc-link[href="#${en.target.id}"]`);
+            if (link) link.classList.add('active');
+        }
+    });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

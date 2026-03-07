@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — HealthSync</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth-shared.css">
+    <style>
+        .auth-card { max-width: 500px; }
+    </style>
+</head>
+<body>
+
+<div class="auth-bg">
+    <div class="auth-bg-blob blob-1"></div>
+    <div class="auth-bg-blob blob-2"></div>
+    <div class="auth-bg-blob blob-3"></div>
+</div>
+
+<a href="/" class="back-btn"><i class="fas fa-arrow-left"></i>Back to Home</a>
+
+<div class="auth-card">
+
+    <a href="/" class="auth-brand">
+        <div class="auth-brand-icon">
+            <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1 4.5 2.09C13.09 4 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+        <span class="auth-brand-name">Health<span>Sync</span></span>
+    </a>
+
+    <div class="auth-heading">
+        <h1>Create your account</h1>
+        <p>Start your health journey today — it's free</p>
+    </div>
+
+    <div id="authAlert" class="auth-alert"></div>
+
+    <form id="registerForm" autocomplete="on">
+
+        <div class="field">
+            <label for="name">Full Name <span class="req">*</span></label>
+            <div class="input-row">
+                <i class="fas fa-user fi"></i>
+                <input type="text" id="name" placeholder="Your full name" required autocomplete="name" minlength="2">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="email">Email Address <span class="req">*</span></label>
+            <div class="input-row">
+                <i class="fas fa-envelope fi"></i>
+                <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="password">Password <span class="req">*</span></label>
+            <div class="input-row">
+                <i class="fas fa-lock fi"></i>
+                <input type="password" id="password" placeholder="Create a strong password" required autocomplete="new-password" minlength="6" oninput="checkStrength(this.value)">
+                <button type="button" class="pw-eye" onclick="togglePw('password',this)"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="field-hint" id="strengthLabel"></div>
+        </div>
+
+        <div class="field">
+            <label for="confirmPassword">Confirm Password <span class="req">*</span></label>
+            <div class="input-row">
+                <i class="fas fa-lock fi"></i>
+                <input type="password" id="confirmPassword" placeholder="Re-enter your password" required autocomplete="new-password" oninput="checkMatch()">
+                <button type="button" class="pw-eye" onclick="togglePw('confirmPassword',this)"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="field-hint" id="matchLabel"></div>
+        </div>
+
+        <div class="check-row">
+            <input type="checkbox" id="termsCheck" required>
+            <label for="termsCheck">I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a></label>
+        </div>
+
+        <button type="submit" class="btn-auth green" id="submitBtn">
+            <span id="btnText"><i class="fas fa-user-plus"></i>Create Account</span>
+            <span id="btnLoader" style="display:none"><i class="fas fa-spinner fa-spin"></i>Creating account…</span>
+        </button>
+
+    </form>
+
+    <div class="auth-link-row">
+        Already have an account? <a href="/login"><i class="fas fa-sign-in-alt me-1"></i>Sign in</a>
+    </div>
+
+</div>
+
+<script>
+function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.querySelector('i').classList.toggle('fa-eye');
+    btn.querySelector('i').classList.toggle('fa-eye-slash');
+}
+
+function checkStrength(val) {
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    if (!val) { fill.style.width='0'; label.textContent=''; return; }
+
+    let score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const lvls = [
+        {pct:'20%',color:'#EF4444',text:'Very weak'},
+        {pct:'40%',color:'#F59E0B',text:'Weak'},
+        {pct:'60%',color:'#FBBF24',text:'Fair'},
+        {pct:'80%',color:'#10B981',text:'Strong'},
+        {pct:'100%',color:'#059669',text:'Very strong'},
+    ];
+    const l = lvls[score-1] || lvls[0];
+    fill.style.width  = l.pct;
+    fill.style.background = l.color;
+    label.textContent = l.text;
+    label.style.color = l.color;
+}
+
+function checkMatch() {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPassword').value;
+    const lbl = document.getElementById('matchLabel');
+    if (!cpw) { lbl.textContent=''; return; }
+    if (pw === cpw) { lbl.textContent='✓ Passwords match'; lbl.style.color='#10B981'; }
+    else            { lbl.textContent='✗ Passwords do not match'; lbl.style.color='#EF4444'; }
+}
+
+function showAlert(msg, type) {
+    const el = document.getElementById('authAlert');
+    const icons = { error:'fa-exclamation-circle', success:'fa-check-circle', info:'fa-info-circle' };
+    el.className = `auth-alert ${type} show`;
+    el.innerHTML = `<i class="fas ${icons[type]}"></i>${msg}`;
+    if (type === 'error') setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function setLoading(on) {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = on;
+    document.getElementById('btnText').style.display   = on ? 'none' : 'flex';
+    document.getElementById('btnLoader').style.display = on ? 'flex' : 'none';
+}
+
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (token) {
+        const role = localStorage.getItem('role') || sessionStorage.getItem('role');
+        window.location.href = role === 'ROLE_ADMIN' ? '/admin-dashboard' : '/dashboard';
+    }
+});
+
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name    = document.getElementById('name').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const pw      = document.getElementById('password').value;
+    const cpw     = document.getElementById('confirmPassword').value;
+    const terms   = document.getElementById('termsCheck').checked;
+
+    if (name.length < 2)  { showAlert('Name must be at least 2 characters','error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('Enter a valid email address','error'); return; }
+    if (pw.length < 6)    { showAlert('Password must be at least 6 characters','error'); return; }
+    if (pw !== cpw)       { showAlert('Passwords do not match','error'); return; }
+    if (!terms)           { showAlert('Please accept the Terms & Privacy Policy','error'); return; }
+
+    setLoading(true);
+    try {
+        const res  = await fetch('/api/auth/register', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ name, email, password:pw })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Registration failed');
+
+        showAlert('Account created! Logging you in…','success');
+        localStorage.setItem('token',  data.token);
+        localStorage.setItem('role',   data.role);
+        localStorage.setItem('email',  data.email);
+        localStorage.setItem('userId', data.userId);
+        if (data.name) localStorage.setItem('userName', data.name);
+
+        setTimeout(() => {
+            window.location.href = data.role === 'ROLE_ADMIN' ? '/admin-dashboard' : '/dashboard';
+        }, 1200);
+    } catch (err) {
+        const msg = err.message.includes('already') ? 'This email is already registered' : (err.message || 'Registration failed');
+        showAlert(msg, 'error');
+        setLoading(false);
+    }
+});
+</script>
+</body>
+</html>
