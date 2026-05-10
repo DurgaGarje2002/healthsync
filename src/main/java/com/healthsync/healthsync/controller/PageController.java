@@ -39,6 +39,12 @@ public class PageController {
         return "dashboard";
     }
 
+    
+    @GetMapping("/admin-dashboard")
+    public String adminDashboard() {
+        return "admin-dashboard";
+    }
+    
     @GetMapping("/profile")
     public String profile() {
         return "profile";
